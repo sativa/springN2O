@@ -1,0 +1,59 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = FALSE,
+	message = FALSE,
+	warning = FALSE
+)
+library(tidyverse)
+library(lubridate)
+```
+
+```{r read and select ars flux data}
+ars_fluxes<-read_csv("../data/ars_fluxes.csv", skip = 2)
+
+fluxes<-ars_fluxes%>%
+  select(`Experimental Unit ID`, Date, N2O, Air_Temp, Soil_Temp,    ... =   Soil_Moisture)%>%
+  mutate(Date = mdy_hms(Date))
+```
+
+```{r read and select ars weather data}
+ars_weather<-read_csv("../data/ars_weather.csv", skip = 2)
+
+weather<-ars_weather%>%
+  select(`Site ID`, Date, `Temperate, air, daily, maximum, degrees Celsius`, `Temperate, air, daily, minimum, degrees Celsius`, `Total_Net_Radn`)%>%
+  mutate(Date = mdy_hms(Date))
+  
+```
+
+
+```{r filter_data}
+fluxes<-ars%>%
+  select(`Experimental Unit ID`, Date, N2O, Air_Temp, Soil_Temp,    ... =   Soil_Moisture)%>%
+  mutate(Date = mdy_hms(Date))%>%
+  separate(`Experimental Unit ID`, c("state","exp"), sep = 2)
+
+head(fluxes)
+```
+
+```{r check these data out}
+
+ggplot(fluxes, (aes(x = state, y = N2O)))+
+  geom_jitter(alpha = .3)
+```
+
+```{r yaaaaaay}
+ggplot(fluxes, (aes(x = Soil_Temp, y = N2O)))+
+  geom_point(alpha = .3)+
+  facet_wrap(~state)
+```
+
+```{r air temps}
+ggplot(fluxes, (aes(x = state, y = Air_Temp)))+
+  geom_jitter(alpha = .3)
+```
+
