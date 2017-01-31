@@ -17,39 +17,44 @@ library(lubridate)
 ars_fluxes<-read_csv("../data/ars_fluxes.csv", skip = 2)
 
 fluxes<-ars_fluxes%>%
-  select(`Experimental Unit ID`, Date, N2O, Air_Temp, Soil_Temp,    ... =   Soil_Moisture)%>%
-  mutate(Date = mdy_hms(Date))
+  select(`Experimental Unit ID`, Date, N2O, Air_Temp, Soil_Temp, Soil_Moisture)%>%
+  mutate(Date = mdy_hms(Date))%>%
+  separate(`Experimental Unit ID`, c("state","exp"), sep = 3)
+
+head(fluxes)
 ```
 
 ```{r read and select ars weather data}
 ars_weather<-read_csv("../data/ars_weather.csv", skip = 2)
 
 weather<-ars_weather%>%
-  select(`Site ID`, Date, `Temperate, air, daily, maximum, degrees Celsius`, `Temperate, air, daily, minimum, degrees Celsius`, `Total_Net_Radn`)%>%
-  mutate(Date = mdy_hms(Date))
-  
+  select(`Site ID`, Date, `Temperate, air, daily, maximum, degrees Celsius`, `Temperate, air, daily, minimum, degrees Celsius`, Precip, `Total_Net_Radn`)%>%
+  mutate(Date = mdy_hms(Date))%>%
+  separate(`Site ID`, c("state","exp"), sep = 3)%>%
+  filter(state != "ORP")
+
+head(weather)
 ```
 
 
-```{r filter_data}
-fluxes<-ars%>%
-  select(`Experimental Unit ID`, Date, N2O, Air_Temp, Soil_Temp,    ... =   Soil_Moisture)%>%
-  mutate(Date = mdy_hms(Date))%>%
-  separate(`Experimental Unit ID`, c("state","exp"), sep = 2)
+```{r join and filter fluxes and weather data}
+ars<-full_join(weather, fluxes, by=c("state", "Date"))
 
-head(fluxes)
+colnames(ars)<-c("site", "nada", "date", "max_temp", "min_temp", "precip", "radn", "exp", "N2O", "air_temp", "soil_temp", "soil_moisture")
+
+head(ars)
 ```
 
 ```{r check these data out}
 
-ggplot(fluxes, (aes(x = state, y = N2O)))+
+ggplot(ars, (aes(x = state, y = N2O)))+
   geom_jitter(alpha = .3)
 ```
 
 ```{r yaaaaaay}
-ggplot(fluxes, (aes(x = Soil_Temp, y = N2O)))+
+ggplot(ars, (aes(x = date, y = max_temp)))+
   geom_point(alpha = .3)+
-  facet_wrap(~state)
+  facet_wrap(~site)
 ```
 
 ```{r air temps}
