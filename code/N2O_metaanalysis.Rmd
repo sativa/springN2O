@@ -51,14 +51,45 @@ ggplot(ars, (aes(x = state, y = N2O)))+
   geom_jitter(alpha = .3)
 ```
 
-```{r yaaaaaay}
+```{r look for sites that arent cold enough}
 ggplot(ars, (aes(x = date, y = max_temp)))+
   geom_point(alpha = .3)+
+  geom_hline(yintercept=0)+
   facet_wrap(~site)
 ```
+```{r remove warm sites}
+ars_cold<-ars %>% filter(site %in% c("INA", "INT", "INW", "MNM", "MNR", "NDM", "NEM", "NVN", "PAH"))%>%
+   mutate(town = ifelse((site %in% c("INA", "INT", "INW")), "West_Lafayette",
+                        ifelse((site == "MNM"), "Morris",
+                               ifelse((site == "MNR"), "Roseville",
+                                      ifelse((site %in% c("NDM", "NEM", "NVN")), "Mandan",
+                                            ifelse((site == "PAH"), "University_Park", "NA"                                                                                           ))))))%>%
+  mutate(month=month(date, label=TRUE), year = as.factor(year(date)))%>%
+  filter(N2O < 1500)
 
-```{r air temps}
-ggplot(fluxes, (aes(x = state, y = Air_Temp)))+
-  geom_jitter(alpha = .3)
+ggplot(ars_cold, (aes(x = date, y = max_temp)))+
+  geom_point(alpha = .2)+
+  geom_hline(yintercept=0)+
+  facet_wrap(~town)
 ```
 
+```{r cold fluxes}
+ggplot(ars_cold, (aes(x = town, y = N2O)))+
+  geom_jitter(alpha = .3)
+```
+```{r N20 over the years}
+ggplot(ars_cold, (aes(x = date, y = N2O)))+
+  geom_point(alpha = .3)+
+  facet_wrap(~town, scales = "free")
+``` 
+```{r N2O by month}
+ggplot(ars_cold, aes(x=month, y=N2O, color = year))+
+  geom_jitter(alpha=.3)+
+  facet_wrap(~town, scales = "free", nrow=5)
+```
+
+```{r N2O and radiation in Mandan}
+ggplot(data=filter(ars_cold, town == "Mandan", radn != "NA"), aes(x=as.numeric(radn), y=N2O, color = year))+
+  geom_jitter(alpha=.3)#+
+  #facet_wrap(~exp, scales = "free")
+```
