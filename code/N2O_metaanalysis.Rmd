@@ -47,7 +47,7 @@ head(ars)
 
 ```{r check these data out}
 
-ggplot(ars, (aes(x = state, y = N2O)))+
+ggplot(fluxes, (aes(x = state, y = N2O)))+
   geom_jitter(alpha = .3)
 ```
 
@@ -65,7 +65,7 @@ ars_cold<-ars %>% filter(site %in% c("INA", "INT", "INW", "MNM", "MNR", "NDM", "
                                       ifelse((site %in% c("NDM", "NEM", "NVN")), "Mandan",
                                             ifelse((site == "PAH"), "University_Park", "NA"                                                                                           ))))))%>%
   mutate(month=month(date, label=TRUE), year = as.factor(year(date)))%>%
-  filter(N2O < 1500)
+  filter(N2O < 1500 | is.na(N2O)) 
 
 ggplot(ars_cold, (aes(x = date, y = max_temp)))+
   geom_point(alpha = .2)+
@@ -84,14 +84,15 @@ ggplot(ars_cold, (aes(x = date, y = N2O)))+
 ``` 
 ```{r N2O by month}
 ggplot(data = filter(ars_cold, month %in% c("Jan", "Feb", "Mar", "Apr", "May")) , aes(x=month, y=N2O, color = year))+
-  geom_jitter(alpha=.3)+
+  geom_boxplot()+
   facet_wrap(~town, scales = "free", nrow=5)
 ```
 
 ```{r N2O and radiation in Mandan}
-ggplot(data=filter(ars_cold, town == "Mandan", radn != "NA"), aes(x=as.numeric(radn), y=N2O, color = year))+
+ggplot(data=filter(ars_cold, town == "Mandan", air_temp != "NA"), aes(x=air_temp, y=N2O, color = year))+
   geom_jitter(alpha=.3)#+
-  #facet_wrap(~exp, scales = "free")
+ # facet_wrap(~year, scales = "free")
+head(ars_cold)
 ```
 
 ```{r narrow down to spring}
