@@ -83,7 +83,7 @@ ggplot(ars_cold, (aes(x = date, y = N2O)))+
   facet_wrap(~town, scales = "free")
 ``` 
 ```{r N2O by month}
-ggplot(ars_cold, aes(x=month, y=N2O, color = year))+
+ggplot(data = filter(ars_cold, month %in% c("Jan", "Feb", "Mar", "Apr", "May")) , aes(x=month, y=N2O, color = year))+
   geom_jitter(alpha=.3)+
   facet_wrap(~town, scales = "free", nrow=5)
 ```
@@ -92,4 +92,11 @@ ggplot(ars_cold, aes(x=month, y=N2O, color = year))+
 ggplot(data=filter(ars_cold, town == "Mandan", radn != "NA"), aes(x=as.numeric(radn), y=N2O, color = year))+
   geom_jitter(alpha=.3)#+
   #facet_wrap(~exp, scales = "free")
+```
+
+```{r narrow down to spring}
+ars_spring<-ars_cold%>% filter(month %in% c("Jan", "Feb", "Mar", "Apr", "May"))
+
+head(ars_spring)
+
 ```
