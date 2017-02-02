@@ -63,7 +63,6 @@ colnames(ars)<-c("site", "nada", "date", "max_temp", "min_temp", "precip", "radn
 
 head(ars)
 ```
-
 ```{r check these data out}
 
 ggplot(fluxes, (aes(x = state, y = N2O)))+
