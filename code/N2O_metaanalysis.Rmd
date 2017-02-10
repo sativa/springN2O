@@ -35,7 +35,7 @@ weather<-ars_weather%>%
 
 head(weather)
 ```
-```{r read and select daymet ars data}
+```{r read and select daymet ars data, warning=TRUE}
 daymet_mandan<-read_csv("../data/daymet_mandan.csv", skip = 7)
 daymet_mandan$town<-"Mandan"
 daymet_morris<-read_csv("../data/daymet_morris.csv", skip = 7)
@@ -51,6 +51,8 @@ daymet<-rbind(daymet_mandan, daymet_morris, daymet_roseville, daymet_university_
 
 daymet$date<-as.Date(strptime(paste(daymet$year, daymet$yday), format="%Y%j"))
 colnames(daymet)<-c("year", "yday", "daymet_prcp", "daymet_radn", "daymet_tmax", "daymet_tmin", "town", "date")
+
+#daymet<-mutate(daymet, if_else )
 
 head(daymet)
 ```
@@ -82,13 +84,17 @@ ars_cold<-ars %>% filter(site %in% c("INA", "INT", "INW", "MNM", "MNR", "NDM", "
                                ifelse((site == "MNR"), "Roseville",
                                       ifelse((site %in% c("NDM", "NEM", "NVN")), "Mandan",
                                             ifelse((site == "PAH"), "University_Park", "NA"                                                                                           ))))))%>%
-  mutate(month=month(date, label=TRUE), year = as.factor(year(date)))%>%
+  mutate(month=month(date, label=TRUE), year = as.factor(year(date)), date = as.Date(date))%>%
   filter(N2O < 1500 | is.na(N2O)) 
 
 ggplot(ars_cold, (aes(x = date, y = max_temp)))+
   geom_point(alpha = .2)+
   geom_hline(yintercept=0)+
   facet_wrap(~town)
+```  
+
+```{r ars plus daymet}  
+both_ars_cold<-right_join(daymet, ars_cold, by = c("date", "town"))
 ```
 
 ```{r cold fluxes}
@@ -121,7 +127,7 @@ head(ars_spring)
 ```
 
 ```{r spring N20}
-ggplot(data = group_by(ars_spring, year)%>%filter(town == "Morris") , aes(x=date, y=N2O))+
+ggplot(data = filter(both_ars_cold, town == "Morris"& year.y %in% c(2004:2008)) , aes(x=yday, y=N2O))+
   geom_point()+
-  facet_wrap(~year)
+  facet_wrap(~year.y)
 ```
