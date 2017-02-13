@@ -126,8 +126,15 @@ head(ars_spring)
 
 ```
 
-```{r spring N20}
+```{r Morris spring N20}
 ggplot(data = filter(both_ars_cold, town == "Morris"& year.y %in% c(2004:2008)) , aes(x=yday, y=N2O))+
   geom_point()+
+  facet_wrap(~year.y)
+```  
+```{r IN spring N20}
+ggplot()+
+  geom_point(data = filter(both_ars_cold, town == "West_Lafayette"& year.y %in% c(2004:2012)), aes(x=yday, y=N2O))+
+  geom_line(data = filter(both_ars_cold, town == "West_Lafayette"& year.y %in% c(2004:2012)),
+            aes(x=yday, y=air_temp))+
   facet_wrap(~year.y)
 ```
