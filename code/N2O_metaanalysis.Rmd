@@ -178,6 +178,9 @@ What do I do about missed peaks?
 Are IN peaks from fertilizer at planting? Probably.
 
 I need more data from Canada.
+My NY data?
+Iowa data?
+Duxbury data?
 NEED MORE DATA.
 
 Look at Johnson's paper.
@@ -188,6 +191,16 @@ Latitude and N2O
 Soil texture  
 Soil CN  
 
+```{r kbs data}  
+datain<-read_csv("../data/KBS.csv", skip=19)
+colnames(datain)<-c("date", "trt", "rep", "CH4", "CO2", "N2O_N", "year", "temp", "crop")
+datain$day<-yday(datain$date)
+```
 
+```{r kbs raw fluxes IN N grams per ha per day}
+ggplot(datain, aes(x=day, y = N2O_N))+
+         geom_jitter()+
+         facet_wrap(~year)
+```
 
   
