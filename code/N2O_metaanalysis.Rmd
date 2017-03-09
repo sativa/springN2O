@@ -202,5 +202,13 @@ ggplot(datain, aes(x=day, y = N2O_N))+
          geom_jitter()+
          facet_wrap(~year)
 ```
+  
+  
+http://www.n2o.net.au/information/for-researchers/ rDataOne  
 
+Flechard C.R., P. Ambus, U. Skiba, R.M. Rees, A. Hensen, A. van Amstel, A. van den Pol-van Dasselaar, J.-F. Soussana, M. Jones, J. Clifton-Brown, A. Raschi, L. Horvath, A. Neftel, M. Jocher, C. Ammann, J. Leifeld, J. Fuhrer, P. Calanca, E. Thalman, K. Pilegaard, et al. (2007) Effects of climate and management intensity on nitrous oxide emissions in grassland systems across Europe. Agriculture, Ecosystems and Environment, 121(1-2) 135-152  
+
+Pihlatie M, 2007: Nitrous oxide emissions from selected natural and managed northern ecosystems. University of Helsinki, Department of Environmental Sciences. PhD thesis  
+
+Estimates neglecting cold regions + thaw periods miss 17 to 28% of the story. 
   
