@@ -1,0 +1,548 @@
+This file is for ERS.
+
+When Intakes are placed in the field, distances to the plot edges
+must be measured in order to later estimate fetch values.
+ 
+
+The simple diagram presented below should help the reader further
+understand the Intake_Location file.
+
+All plots have width =  100 m, length = 150 m.
+
+
+Definitions:
+
+	L_N: distance, in length direction, from the intakes to the
+edge North of Intakes.
+
+	W_E: distance, in width direction, from the intakes to the
+edge East of Intakes.
+
+
+
+					  		      North
+							     .
+							    .
+			     				   .
+							  .
+			---------------------------------
+			|		|		|
+			|		|		|
+			|		|		|
+			|		|		|
+			|		|		|
+	    Plot_2	|		|		|  Plot_1
+			|	  W_E	|    W_W	|
+			|	x.......|..........x	|
+			|	.	|	   .	|
+			|	.	|	   .	|
+			|	.L_S	|	L_S.	|
+			|	.	|	   .	|
+			|	.	|	   .	|
+			|	.	|	   .	|
+			---------------------------------
+				     TRAILER			............ENTRANCE
+
+		--------------------------------
+		|      .	|	.	|
+		|      .	|	.	|
+		|      .	|	.	|
+		|      .	|	.	|
+		|      .	|	.	|
+	Plot_4	|  L_N .	|	.	|  Plot_3
+		|      .	|	.	|
+		|      .  W_E	|	. L_N	|
+		|      x........|	.	|
+		|		| W_W	.	|
+		|		|.......x	|
+		|    		|		|
+		|		|		|
+		|		|		|
+		--------------------------------
+
+
+
+This file is for ERS, year 2000
+Plot 1
+Crop = corn
+At this time (March, 2004) the true placement of instruments
+in the Plot is not known.
+Units = [m]
+It is assumed that placement, at the beginning of 2000, was
+similar to the one that corresponds to year 2004.
+In 2000, placement must have changed later in the year
+When crop is very tall (corn, for example), towers are
+eventually moved to the edge. Again, location of towers is
+assumed to be similar to the one reported for 2003 (from Peter
+von Bertoldi diagrams of CFI plots).
+L_S: distance, in length direction, from the intakes to the
+edge South of Intakes.
+Only one measurement in width direction and one in length
+direction are needed.
+
+
+This file is for ERS, year 2000
+Plot 2
+Crop = corn
+At this time (March, 2004) the true placement of instruments
+in the Plot is not known.
+Units = [m]
+It is assumed that placement, at the beginning of 2003, was
+similar to the one that corresponds to year 2004.
+In 2000, placement must have changed later in the year
+When crop is very tall (corn, for example), towers are
+eventually moved to the edge. Again, location of towers is
+assumed to be similar to the one reported for 2003 (from Peter
+von Bertoldi diagrams of CFI plots).
+L_S: distance, in length direction, from the intakes to the
+edge South of Intakes.
+Only one measurement in width direction and one in length
+direction are needed.
+
+
+This file is for ERS, year 2000
+Plot 3
+Crop = corn
+At this time (March, 2004) the true placement of instruments
+in the Plot is not known.
+Units = [m]
+It is assumed that placement, at the beginning of 2003, was
+similar to the one that corresponds to year 2004.
+In 2000, placement must have changed later in the year
+When crop is very tall (corn, for example), towers are
+eventually moved to the edge. Again, location of towers is
+assumed to be similar to the one reported for 2003 (from Peter
+von Bertoldi diagrams of CFI plots).
+L_S: distance, in length direction, from the intakes to the
+edge South of Intakes.
+Only one measurement in width direction and one in length
+direction are needed.
+
+
+This file is for ERS, year 2000
+Plot 4
+Crop = corn
+At this time (March, 2004) the true placement of instruments
+in the Plot is not known.
+Units = [m]
+It is assumed that placement, at the beginning of 2003, was
+similar to the one that corresponds to year 2004.
+In 2000, placement must have changed later in the year
+When crop is very tall (corn, for example), towers are
+eventually moved to the edge. Again, location of towers is
+assumed to be similar to the one reported for 2003 (from Peter
+von Bertoldi diagrams of CFI plots).
+L_S: distance, in length direction, from the intakes to the
+edge South of Intakes.
+Only one measurement in width direction and one in length
+direction are needed.
+
+
+This file is for ERS, year 2001
+Plot 1
+Crop = soybean
+ACF does not know the true placement of instruments during
+this year 2001.
+Units = [m]
+It is assumed that placement was similar to the one that
+corresponds to year 2004. Measurements in the field were
+taken by Ivan, in February 2004. All the field was covered
+with snow; measurements were repeated in the spring when
+snow was no longer present.
+It is assumed the placement did not change during the year
+Only when crop is very tall (corn, for example), towers are
+eventually moved to the edge.
+L_S: distance, in length direction, from the intakes to the
+edge South of Intakes.
+Only one measurement in width direction and one in length
+direction are needed.
+
+
+This file is for ERS, year 2001
+Plot 2
+Crop = soybean
+ACF does not know the true placement of instruments during
+this year 2001
+Units = [m]
+It is assumed that placement was similar to the one that
+corresponds to year 2004. Measurements in the field were
+taken by Ivan, in February 2004. All the field was covered
+with snow; measurements were repeated in the spring when
+snow was no longer present.
+It is assumed the placement did not change during the year
+Only when crop is very tall (corn, for example), towers are
+eventually moved to the edge.
+L_S: distance, in length direction, from the intakes to the
+edge South of Intakes.
+Only one measurement in width direction and one in length
+direction are needed
+
+
+This file is for ERS, year 2001
+Plot 3
+Crop = soybean
+ACF does not know the true placement of instruments during
+this year 2001
+Units = [m]
+It is assumed that placement was similar to the one that
+corresponds to year 2004. Measurements in the field were
+taken by Ivan, in February 2004. All the field was covered
+with snow; measurements were repeated in the spring when
+snow was no longer present.
+It is assumed the placement did not change during the year
+Only when crop is very tall (corn, for example), towers are
+eventually moved to the edge.
+L_S: distance, in length direction, from the intakes to the
+edge South of Intakes.
+Only one measurement in width direction and one in length
+direction are needed.
+
+This file is for ERS, year 2001
+Plot 4
+Crop = soybean
+ACF does not know the true placement of instruments during
+this year 2001
+Units = [m]
+It is assumed that placement was similar to the one that
+corresponds to year 2004. Measurements in the field were
+taken by Ivan, in February 2004. All the field was covered
+with snow; measurements were repeated in the spring when
+snow was no longer present.
+It is assumed the placement did not change during the year
+Only when crop is very tall (corn, for example), towers are
+eventually moved to the edge.
+L_S: distance, in length direction, from the intakes to the
+edge South of Intakes.
+Only one measurement in width direction and one in length
+direction are needed.
+
+
+This file is for ERS, year 2002
+Plot 1
+Crop = wheat
+At this time (March, 2004) the true placement of instruments
+in the Plot is not known.
+Units = [m]
+It is assumed that placement was similar to the one that
+corresponds to year 2004. Measurements in the field were
+taken by Ivan, in February 2004. All the field was covered
+with snow; measurements will be repeated in the spring when
+snow is no longer present.
+It is assumed the placement did not changed during the year
+Only when crop is very tall (corn, for example), towers are
+eventually moved to the edge.
+L_S: distance, in length direction, from the intakes to the
+edge South of Intakes.
+Only one measurement in width direction and one in length
+direction are needed.
+
+
+This file is for ERS, year 2002
+Plot 2
+Crop = wheat
+At this time (March, 2004) the true placement of instruments
+in the Plot is not known.
+Units = [m]
+It is assumed that placement was similar to the one that
+corresponds to year 2004. Measurements in the field were
+taken by Ivan, in February 2004. All the field was covered
+with snow; measurements will be repeated in the spring when
+snow is no longer present.
+It is assumed the placement did not changed during the year
+Only when crop is very tall (corn, for example), towers are
+eventually moved to the edge.
+L_S: distance, in length direction, from the intakes to the
+edge South of Intakes.
+Only one measurement in width direction and one in length
+direction are needed.
+
+
+This file is for ERS, year 2002
+Plot 3
+Crop = wheat
+At this time (March, 2004) the true placement of instruments
+in the Plot is not known.
+Units = [m]
+It is assumed that placement was similar to the one that
+corresponds to year 2004. Measurements in the field were
+taken by Ivan, in February 2004. All the field was covered
+with snow; measurements will be repeated in the spring when
+snow is no longer present.
+It is assumed the placement did not changed during the year
+Only when crop is very tall (corn, for example), towers are
+eventually moved to the edge.
+L_S: distance, in length direction, from the intakes to the
+edge South of Intakes.
+Only one measurement in width direction and one in length
+direction are needed.
+
+
+This file is for ERS, year 2002
+Plot 4
+Crop = wheat
+At this time (March, 2004) the true placement of instruments
+in the Plot is not known.
+Units = [m]
+It is assumed that placement was similar to the one that
+corresponds to year 2004. Measurements in the field were
+taken by Ivan, in February 2004. All the field was covered
+with snow; measurements will be repeated in the spring when
+snow is no longer present.
+It is assumed the placement did not changed during the year
+Only when crop is very tall (corn, for example), towers are
+eventually moved to the edge.
+L_S: distance, in length direction, from the intakes to the
+edge South of Intakes.
+Only one measurement in width direction and one in length
+direction are needed.
+
+
+This file is for ERS, year 2003
+Plot 1
+Crop = corn
+At this time (March, 2004) the true placement of instruments
+in the Plot is not known.
+Units = [m]
+It is assumed that placement, at the beginning of 2003, was
+similar to the one that corresponds to year 2004.
+Measurements in the field were taken by Ivan, in February 2004.
+All the field was covered with snow; measurements will be
+repeated in the spring when snow is no longer present.
+In 2003, placement should change later in the year
+When crop is very tall (corn, for example), towers are
+eventually moved to the edge. Beginning on DOY 184, ACF uses
+the diagram of CFI plots made by Peter von Bertoldi.
+ACF assumes instruments return to original placement on
+DOY 316 (after harvest).
+L_S: distance, in length direction, from the intakes to the
+edge South of Intakes.
+Only one measurement in width direction and one in length
+direction are needed.
+
+
+This file is for ERS, year 2003
+Plot 2
+Crop = corn
+At this time (March, 2004) the true placement of instruments
+in the Plot is not known.
+Units = [m]
+It is assumed that placement, at the beginning of 2003, was
+similar to the one that corresponds to year 2004.
+Measurements in the field were taken by Ivan, in February 2004.
+All the field was covered with snow; measurements will be
+repeated in the spring when snow is no longer present.
+In 2003, placement should change later in the year.
+When crop is very tall (corn, for example), towers are
+eventually moved to the edge. Beginning on DOY 184, ACF uses
+the diagram of CFI plots made by Peter von Bertoldi.
+ACF assumes instruments return to original placement on
+DOY 316 (after harvest).
+L_S: distance, in length direction, from the intakes to the
+edge South of Intakes.
+Only one measurement in width direction and one in length
+direction are needed.
+
+
+This file is for ERS, year 2003
+Plot 3
+Crop = corn
+At this time (March, 2004) the true placement of instruments
+in the Plot is not known.
+Units = [m]
+It is assumed that placement, at the beginning of 2003, was
+similar to the one that corresponds to year 2004.
+Measurements in the field were taken by Ivan, in February 2004.
+All the field was covered with snow; measurements will be
+repeated in the spring when snow is no longer present.
+In 2003, placement should change later in the year.
+When crop is very tall (corn, for example), towers are
+eventually moved to the edge. Beginning on DOY 184, ACF uses
+the diagram of CFI plots made by Peter von Bertoldi.
+ACF assumes instruments return to original placement on
+DOY 316 (after harvest).
+L_S: distance, in length direction, from the intakes to the
+edge South of Intakes.
+Only one measurement in width direction and one in length
+direction are needed.
+
+
+This file is for ERS, year 2003
+Plot 4
+Crop = corn
+At this time (March, 2004) the true placement of instruments
+in the Plot is not known.
+Units = [m]
+It is assumed that placement, at the beginning of 2003, was
+similar to the one that corresponds to year 2004.
+Measurements in the field were taken by Ivan, in February 2004.
+All the field was covered with snow; measurements will be
+repeated in the spring when snow is no longer present.
+In 2003, placement should change later in the year.
+When crop is very tall (corn, for example), towers are
+eventually moved to the edge. Beginning on DOY 184, ACF uses
+the diagram of CFI plots made by Peter von Bertoldi.
+ACF assumes instruments return to original placement on
+DOY 316 (after harvest).
+L_S: distance, in length direction, from the intakes to the
+edge South of Intakes.
+Only one measurement in width direction and one in length
+direction are needed.
+
+
+This file is for ERS, year 2004
+Plot 1
+Crop = soybean
+Units = [m]
+Measurements in the field were taken by Ivan, in February 2004.
+All the field was covered with snow; measurements will be
+repeated in the spring when snow is no longer present.
+The first row corresponds to these measurements in winter.
+The second row corresponds to measurements taken in May, 2004.
+Instruments were removed from the field for planting. Put back
+on May 21/04 (DOY 142).
+They were removed for harvest and put back on Oct 26/04 (DOY 300)
+L_S: distance, in length direction, from the intakes to the
+edge South of Intakes.
+Only one measurement in width direction and one in length
+direction are needed.
+
+
+This file is for ERS, year 2004
+Plot 2
+Crop = soybean
+Units = [m]
+Measurements in the field were taken by Ivan, in February 2004.
+All the field was covered with snow; measurements will be
+repeated in the spring when snow is no longer present.
+The first row corresponds to these measurements in winter.
+The second row corresponds to measurements taken in May, 2004.
+However, L_S was checked on May 11/04 and corrected.
+Instruments were removed from the field for planting. Put back
+on May 21/04 (DOY 142).
+They were removed for harvest and put back on Oct 26/04 (DOY 300)
+L_S: distance, in length direction, from the intakes to the
+edge South of Intakes.
+Only one measurement in width direction and one in length
+direction are needed.
+
+
+This file is for ERS, year 2004
+Plot 3
+Crop = soybean
+Units = [m]
+Measurements in the field were taken by Ivan, in February 2004.
+All the field was covered with snow; measurements will be
+repeated in the spring when snow is no longer present.
+The first row corresponds to these measurements in winter.
+The second row corresponds to measurements taken in May, 2004.
+Instruments were removed from the field for planting. Put back
+on May 21/04 (DOY 142).
+They were removed for harvest and put back on Oct 26/04 (DOY 300)
+Info for this date in Logbook is not correct. Ryan rechecked distances
+in April 2005.
+L_S: distance, in length direction, from the intakes to the
+edge South of Intakes.
+Only one measurement in width direction and one in length
+direction are needed.
+Anemom. placement for DOY 300 is L_N: (44.2-6.1) = 38.1 m
+				   W_S: (58.0-9.6) = 48.4 m
+
+
+This file is for ERS, year 2004
+Plot 4
+Crop = soybean
+Units = [m]
+Measurements in the field were taken by Ivan, in February 2004.
+All the field was covered with snow; measurements will be
+repeated in the spring when snow is no longer present.
+The first row corresponds to these measurements in winter.
+The second row corresponds to measurements taken in May, 2004.
+Instruments were removed from the field for planting. Put back
+on May 21/04 (DOY 142).
+They were removed for harvest and put back on Oct 26/04 (DOY 300)
+L_S: distance, in length direction, from the intakes to the
+edge South of Intakes.
+Only one measurement in width direction and one in length
+direction are needed.
+
+
+This file is for ERS, year 2005
+Plot 1
+Crop = corn
+Units = [m]
+Measurements in the field were taken by Ryan, in December 2004.
+Instruments were removed from the field for planting. Put back
+on May 13/05 (DOY 133).
+Intakes were moved to the edge of the plot on Jun 27/05 (doy 178)
+They were removed for harvest and put back on Oct 12/05 (DOY 285)
+L_S: distance, in length direction, from the intakes to the
+edge South of Intakes.
+W_W: distance, in width direction, from the intakes to the
+west edge of the plot.
+Only one measurement in width direction and one in length
+direction are needed.
+
+Anemom. placement for May 2005 is L_S: (49.5-7.0) = 42.5 m
+				    W_W: (48.5-7.5) = 41.0 m
+
+Anemom. placement for Oct 2005 is L_S: (50.0-1.0) = 49.0 m
+				    W_W: (48.2-7.2) = 41.0 m
+
+
+This file is for ERS, year 2005
+Plot 2
+Crop = corn
+Units = [m]
+Measurements in the field were taken by Ryan, in December 2004.
+Instruments were removed from the field for planting. Put back
+on May 17/05 (DOY 137) according to Logbook
+Intakes were moved to the edge of the plot on Jun 27/05 (DOY 178)
+They were removed for harvest and put back on Oct 06/05 (DOY 279)
+L_S: distance, in length direction, from the intakes to the
+edge South of Intakes.
+W_E: distance, in width direction, from the intakes to the
+east edge of the plot.
+Only one measurement in width direction and one in length
+direction are needed.
+
+Anemom. placement for Oct 2005 is L_S: (56.5-26.1)= 30.4 m
+				    W_E: (46.5-6.7) = 39.8 m
+
+
+This file is for ERS, year 2005
+Plot 3
+Crop = corn
+Units = [m]
+Measurements in the field were taken by Ryan, on Dec 14/2005.
+Info for this date in Logbook is not correct. Ryan rechecked
+distances for this plot in April 2005.
+Instruments were removed from the field for planting. Put back
+on May 13/05 (DOY 133).
+Intakes were moved to the edge of the plot on Jun 27/05 (doy 178)
+They were removed for harvest and put back on Oct 06/05 (DOY 279)
+L_S: distance, in length direction, from the intakes to the
+edge South of Intakes.
+W_W: distance, in width direction, from the intakes to the
+west edge of the plot.
+Only one measurement in width direction and one in length
+direction are needed.
+Anemom. placement for Apr 2005 is L_N: (44.2-6.1) = 38.1 m				    W_W: (58.0-9.6) = 48.4 m
+Anemom. placement for May 2005 is L_N: (43.5-5.9) = 37.6 m
+				    W_W: (56.2-9.2) = 47.0 m
+
+
+This file is for ERS, year 2005
+Plot 4
+Crop = corn
+Units = [m]
+Measurements in the field were taken by Ryan, in December 2004.
+Instruments were removed from the field for planting. Put back
+on May 17/05 (DOY 137) according to Logbook.
+Intakes were moved to the edge of the plot on Jun 27/05 (doy 178)
+They were removed for harvest and put back on Oct 12/05 (DOY 285)
+L_S: distance, in length direction, from the intakes to the
+edge South of Intakes.
+W_E: distance, in width direction, from the intakes to the
+east edge of the plot.
+Only one measurement in width direction and one in length
+direction are needed.

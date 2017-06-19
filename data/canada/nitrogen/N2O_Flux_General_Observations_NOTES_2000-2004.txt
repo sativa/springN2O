@@ -1,0 +1,238 @@
+This file gives some details on flux calculations for ERS, year 2000
+
+==========================================================================
+General observations:
+
+
+Source for d and zo: From_CUPS
+
+No data available from SONIC. Fluxes are NOT corrected for stability
+conditions.
+
+Min. wind_speed accepted : 1 m/s
+
+Min. [fetch/(upper_intake - d)] accepted = 50
+
+Min. [(lower_intake - d)/zo] accepted = 5
+
+See "TGA_general.txt" and "TGA_particular.txt" inside Manual_filters
+folder.
+
+IMPORTANT:
+	ACF thinks that fluxes for Dec 2000 are overestimated.
+	Next year, when CWR and George Thurtell aligned the system,
+stdev and fluxes decreased.
+	ACF will later give an approximate magnitude of the estimated
+overestimation for Dec 2000.
+
+=====================================================================
+
+======================================================================
+This file gives some details on flux calculations for ERS, year 2001
+
+==========================================================================
+General observations:
+
+
+Source for d and zo: From_SONIC
+
+Hv_unfiltered is used in K calculations (see inside "WX_vectors" folder)
+
+K calculated with measured ustar is preferred. When it is not available,
+K_cups is used.
+
+Min. wind_speed accepted : 1 m/s
+
+Min. [fetch/(upper_intake - d)] accepted = 50
+
+Min. [(lower_intake - d)/zo] accepted = 6
+
+See "TGA_general.txt" inside Manual_filters folder.
+
+measured_ustar:
+	Unitl soybean harvest, ustar is the average of both ec systems.
+
+	from Oct 02/01 until Dec 31/01, ustar from ec1 is for CONV
+					ustar from ec2 is for BM
+
+
+IMPORTANT:
+	ACF noticed that when the system was aligned on Feb 03/01 by
+CWR and GT, the fluxes seemed to bigin to be displaced downward. ACF
+means that it seemed the horizontal (average) axis was displaced as a
+result of alignement.
+
+	ACF thinks that fluxes for Jan 2001 were in fact overestimated.
+The "change" is dramatic after Feb 03/01. ACF compared average fluxes one
+week before against those for one week after the alignement. Fluxes for
+the previous days were larger, consistently for all plots. The average
+was 1.74. (1.57 for P_1, 1.81 for P_2, 1.64 for P_3 and 1.57 for P_4)
+ACF made the decision of using a "correcion_FACTOR" = 0.65 for data points
+1:807 (this is previous to TGA system alignement).
+The final N2O_fluxes (and Sonic_Combined) take this factor into consideration.
+
+======================================================================
+
+======================================================================
+In this final set of results, TGA data includes data form the missing
+DC files that were typed in by ACF.
+Also, ACF made this correction: previously, if CUPS_filter = NaN, flux
+would also be NaN even if Ksonic existed; this no longer happens. In a
+similar way, cases with CUPS_filter = 55 (i.e. neither cup1 nor cup2 are
+working) are no longer discarded; ACF checked info from other cups/system
+and data points with low wind speed were ignored via TGA_general.txt
+
+======================================================================
+======================================================================
+
+This file gives some details on flux calculations for ERS, year 2002
+
+==========================================================================
+General observations:
+
+
+Source for d and zo: From_CUPS
+
+Hv_combined is used in K calculations (see inside "WX_vectors" folder)
+
+K calculated with measured ustar is preferred. When it is not available,
+K_cups is used.
+
+Min. wind_speed accepted : 1 m/s
+
+Min. [fetch/(upper_intake - d)] accepted = 50
+
+Min. [(lower_intake - d)/zo] accepted = 6
+
+See "TGA_general.txt" and "TGA_particular.txt" inside Manual_filters folder.
+
+measured_ustar:
+	from Jan 01/02 until Apr 10/02, ustar from ec1 is for CONV
+			 		ustar from ec2 is for BM
+
+
+	from Nov 21/02 until Dec 31/02, ustar from ec1 is for BM
+					ustar from ec2 is for CONV
+
+	during intermediate period, ustar is the average of both ec systems.
+
+============================================================================
+IMPORTANT!!!!
+the manual filter"TGA_particular.txt" has been updated. To be more clear, ACF
+decided to omit some very large negative fluxes that were present form May to
+July 2002. 
+ACF decided to invert the sign for Plot_4 from May 31/02 to Aug 30/02.
+============================================================================
+
+For the FINAL results, ACF made this correction: previously, if CUPS_filter
+were = NaN, flux would also be NaN even if Ksonic existed; this no longer
+happens. One outlier was ignored via "TGA_particular.txt" filter (doy 242).
+Cases with CUPS_filter = 55 (i.e. neither cup1 nor cup2 working) were
+NOT considered for this year.
+
+======================================================================
+
+======================================================================
+
+This file gives some details on flux calculations for ERS, year 2003
+
+==========================================================================
+General observations:
+
+
+Source for d and zo: From_SONIC
+
+Hv_unfiltered is used in K calculations (see inside "WX_vectors" folder)
+
+K calculated with measured ustar is preferred. When it is not available,
+K_cups is used.
+
+Min. wind_speed accepted : 1 m/s
+
+Min. [fetch/(upper_intake - d)] accepted = 50
+
+Min. [(lower_intake - d)/zo] accepted = 5
+
+See "TGA_general.txt" and "TGA_particular.txt" inside Manual_filters folder.
+
+ustar:
+	from Jan 01/03 until Apr 30/03,	ustar from ec1 is for BM
+					ustar from ec2 is for CONV
+
+	from May 01/03 until Oct 31/03, ustar is the average of both ec
+
+	from Oct 30/03 until Dec 31/03, ustar from ec1 is for CONV
+					ustar from ec2 is for BM
+
+============================================================================
+IMPORTANT!!!!
+Preliminar flux values for this year were a bit noisy,
+ACF decided to do some filtering of extreme values. ACF did this by including
+a statement inside "flux_summary_combined.m" that calls the MATLAB function
+created by ACF and named: "filter_outliers.m".
+General criteria for this filter: for each month, mean and stdev are calcula-
+ted using log transformed data. Since negative flux values are common, the
+minimum [negative] value for each month is rounded towards the largest integer
+and its absolute value added to all flux values in the month; data are then
+log transformed.
+Next: |flux value| > 5*stdev is discarded. If data is considered to be par-
+ticularly noisy, criterion is tighter: > 3*stdev.
+Exception: if a large positive flux is occurring during a "probable emission
+event", it is not discarded.
+
+Discarded values are identified in the Flux matrix by general_filter = '99'
+
+
+For these FINAL results, ACF also made this correction: previously, if
+CUPS_filter = NaN, flux would also be NaN even if Ksonic existed; this no
+longer happens. 
+
+Finally, since there was hardly any point left from Plot_3 after fertilization,
+ACF decided to superimpose a wind_direction "window" for doys 185-193.
+This is: if wind_direction for those data points was within 229-302 deg range,
+FETCH_filter criteria was ignored. Again, this window was only used for Plot_3.
+
+After harvest, instruments were put back on the field on Nov 12/05 (Nov 14 for
+Plot_4 intakes). Sonic data begins, however, on Nov 25/05. Fluxes were estimated
+using uncorrected_Kcup for the period Nov 12-Nov 24.
+============================================================================
+============================================================================
+
+This file gives some details on flux calculations for ERS, year 2004
+
+==========================================================================
+General observations:
+
+
+Source for d and zo: From_SONIC
+
+Hv_comb_empir is used in K calculations (see inside "WX_vectors" folder)
+Unfortunately, there was no data from ec systems or Rnet systems for the 
+period Jul 14/04-Aug 31/04.
+As an approximation for this gap, H for daylight hours was calculated
+based on empirical relationships. ERS_WX no longer provides Rnet data,
+only solar radiation.
+
+
+K calculated with measured ustar is preferred. When it is not available,
+K_cups is used.
+
+Min. wind_speed accepted : 1 m/s
+
+Min. [fetch/(upper_intake - d)] accepted = 50
+
+Min. [(lower_intake - d)/zo] accepted = 5
+
+See "TGA_general.txt" and "TGA_particular.txt" inside Manual_filters folder.
+
+ustar:
+	from Jan 01/04 until Apr 26/04,	ustar from ec1 is for CONV
+					ustar from ec2 is for BM
+
+	from this date until Dec 31/04, ustar is the average of the ec
+systems installed (ec1, ec2 and, for a while ec3, were all on Plot_4)
+
+
+======================================================================
+
+======================================================================

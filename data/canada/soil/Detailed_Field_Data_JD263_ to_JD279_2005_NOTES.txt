@@ -1,0 +1,243 @@
+
+Read_me file for the detailed soil sampling carried out from Sep 20
+to Oct 06, 2005 (ERS)
+=====================================================================
+
+
+Sampling collection:
+
+	Four 3-m2 sampling sites were selected in each plot.
+	This is different from sampling for all other dates when six
+sites per plot, rather than four, were sampled. In all these other
+dates, the approximate location of sites was preserved to maintain
+some consistency in the sample_ID used throughout.
+	In keeping this overall site layout, samples ID from the
+sampling described in this file are:
+
+	Sep 20/06:
+		Plot1_Site1.
+
+	Sep 28/05:
+		Plot1_Site2.
+
+	Oct 03/05:
+		Plot1_Site4 and Plot1_Site5.
+
+	Oct 04/05:
+		Plot4_Site2, Plot4_Site3, Plot4_Site5 and Plot4_Site6
+		Plot3_Site1, Plot3_Site2, Plot3_Site4 and Plot3_Site5
+
+	Oct 06/05:
+		Plot2_Site1, Plot2_Site2, Plot2_Site4 and Plot2_Site5
+
+=====================================================================
+IMPORTANT:
+	Samples taken from Plot_4 were wrongly ID at first but final
+files reported by Ravindra are correct.
+=====================================================================
+
+	At each sampling site, exact spot where corn plants had already
+been cut in previous sampling was identified. From this spot, 3 plants
+(i.e. replicates) were randomly chosen for soil (+ residue) sampling.
+
+	(Details of residue sampling are in a similar file located inside
+'\Plant\050920_051006' folder).
+
+
+	For each replicate at each sampling site, undisturbed soil cores
+(0-50 cm) were taken at four different positions/locations (indicated by
+capital letters A, B, C and D). These are:
+	A - Sampling position identified as "on plant": the plant is cut
+at approx. 5 cm from ground level and removed. The "soil probe" is then
+placed directly on the plant base and driven to the desired soil depth.
+	B - Sampling position midway between plants within the row.
+	C - Sampling position 1/4 between rows.
+	D - Sampling position 1/2 (or midway) between rows.
+
+
+	Total number of soil cores was:
+		4 plots X 4 sites X 3 replicates x 4 positions = 192.
+
+	Soil sampling on Sep 20/06 was carried out with a Hammer Drill
+Sampler. Internal metal sleeve diameter was 7 cm.
+
+	Soil sampling on Sep 28, Oct 03-04 and Oct 06 was carried out
+with the Hydraulic Concord Sampler. Internal plastic sleeve diameter
+was 3.8 cm.
+
+	All 192 soil cores were brought back to the lab, where they were
+partitioned into the 4 sampling depths (0-10, 10-20, 20-30 and 30-50 cm).
+For Bulk density determination, soil volume for each depth was estimated  
+on a single soil core (rep) but soil weight was measured on the composite
+sample. Composite samples = samples from each site (all 3 replicates) were
+bulked by depth for each sampling position. All analyses were carried out
+on these composite samples.
+
+	The number of soil samples for this date is therefore:
+		4 plots x 4 sites x 4 positions x 4 depths = 256.
+
+
+=====================================================================
+Analyses to be carried out:
+
+	(Ravindra Ramnarine, for Prof. Voroney)
+
+	On moist soil:
+
+		Soil microbial biomass (2 reps)
+		Incubation - CO2 evolution (2 reps)
+		(C) Light and heavy fraction (on refrigerated soil)
+		Inorganic N - NH4, NO3 (2 reps)
+
+		Acid hydrolysis (on frozen soil)
+
+	On dried soil:
+
+		Total organic carbon and dC13 (Mass Spec)
+
+PLEASE, see UPDATES at the end of this file
+
+=========================================================================
+Further details on lab processing of samples.
+
+Soil core processing:
+
+ 1) Cut soil core into segments (0-10, 10-20, 20-30, 30-50 cm)
+ 2) Place segment into a pre-weighed aluminium dish.  
+ 3) Repeat for all three replicates (composite of plant material, soil and
+    rocks)
+ 4) Determine Wet soil weight (soil+dish)-dish weight= wet soil weight.
+ 5) Transfer segment to 4.76 mm sieve
+ 6) Gently crush soil and pick out
+	a) Plant litter: fresh and old
+	b) Plant residue: stem and roots
+ 7) Quickly pass segment through sieve; pick out residues and rocks while
+    swirling sieve
+ 8) Collect plant litter and residue into aluminium weighing dish (dry at
+    75 degC).
+ 9) Collect rocks into aluminium weighing dish and weigh.
+10) Obtain samples of moist soil (approx. 10 g) for soil moisture content
+    determination (MC).
+     	a) Oven dry at 105 degC for 2 days
+     	b) MC (%) = 100*[(wet soil weight - O.D. weight) / O.D. Weight]
+11) Resieve soil material through 2 mm sieve and moisten if necessary.
+    Push through plant material.
+12) Collect sieved soil and particles > 2 mm ("mineral matter"). Place in
+    separate bags and weigh.
+13) Collect 100 g of sieved soil and freeze for acid hydrolysis.
+14) Collect 25 g of sieved soil and refrigerate for (C) Light and heavy
+    fraction analysis.
+15) Collect ~ 8 g dry soil (i.e. used for moisture content) for Total
+    Organic Carbon (TOC) and dC13 analyses.
+
+
+
+Dry soil samples:
+
+ 1) Finely grind dry soil samples (approx. 8 g each) using a ball mill
+    grinder. Store in glass vials.
+ 2) Remove inorganic carbonates usign HCl.
+ 3) These samples will be sent for TOC and delta-13 carbon analyses with
+    Mass Spec.
+
+
+
+Moist soil samples:
+
+Microbial biomass C & N; inorganic N:
+
+ 1) Weigh out 4 samples moist soil (approx. 25 g each)
+ 2) Place sub-samples in small jars
+	a) 2 samples are extracted immediately with 100 ml KCl (by shaking
+	   for 1 hour)
+	b) 2 samples are fumigated for 24 hours, CHCl3 removed and samples
+	   extracted as above.
+ 3) Filter extracts using Whatman Fibre Glass filter into 100 ml
+    snap cap vials
+ 4) Divide extracts for Organic Carbon (~ 10 ml), Inorganic N (~ 10 ml)
+    into 20 ml vials and dC13 of OC (~ 70 ml)
+ 5) Freeze extracts.
+(Total organic carbon (TOC) measured with C analyzer in Les Evans lab.)
+(For Inorganic N, thaw out frozen 10 ml samples the night before reading
+with TRAACS)
+(dC13 measured via Mass Spec analysis, method for preparation of samples
+not described here; weigh out quantity based on TOC result)
+
+IMPORTANT: SMB N will not be determined. Carbon dyialisis will be carried
+out on those extracts.
+
+=========================================================================
+PROGRESS REPORT: 
+	Jun 02/06: finishing adjusting methodologies described below
+
+
+Soil Incubation CO2:
+
+ 1) Weigh out duplicate 25 g moist samples for each depth.
+ 2) Place in 100 ml vials and pre-incubate for 7 days
+ 3) Place in 1.5 L mason jars.
+ 4) Add 20 ml of 0.5M NaOH traps
+ 5) Leave for 7 days
+ 6) Remove NaOH from jar and discard. Place "fresh" NaOH and seal.
+ 7) Incubate for 14 days
+ 8) Titrate with 0.25M HCl and precipitate with Strantium chloride.
+    Strantium carbonate forms.
+ 9) Sieve with filter paper
+10) Wash repeatedly and dry
+11) Weigh out for MS analysis (quantity based on TOC result)
+
+
+(C) Light and heavy fraction:
+
+ 1) Use 25 g of refrigerated moist 2 mm sieved soil in snap cap vials.
+ 2) Add NaI solution (specific gravity of 1.7 g/cm3)
+ 3) Shake
+ 4) Suck off light fraction (aspirated)
+ 5) What is left is heavy fraction in soil. Spin HF in centrifuge and pour
+    off NaI (do not re-use).
+
+
+Acid hydrolysis:
+
+ 1) Defrost frozen soil (100 g)
+ 2) Reflux overnight with 6M HCl
+ 	a) Easily hydrolyzable material dissolves
+	b) Non-hydrolyzable material is freezed dry and quantity weighed
+	   out for Mass Spec analysis
+
+
+=========================================================================
+UPDATE (June 02, 2006):
+
+	Currently a "test-run" of plant and soil samples have been sent
+to Saskatchewan for mass spec analysis to determine the quantity of 
+sample required, for readings to fall within the range that the mass 
+spec reads).
+=========================================================================
+UPDATE (September 12, 2006)
+
+	Soil sample extractions completed for SMB, N and d13C.
+	No work carried out on LF/HF.
+=========================================================================
+UPDATE (September 26, 2006)
+
+	The following samples sent today to Saskatchewan for MS analysis:
+
+	- ALL corn plant samples
+	- Another "test run" of soil samples, since previous soil sample
+results were inconclusive.
+	- A "test run" of strantium carbonate samples.
+=========================================================================
+UPDATE (December, 2007)
+
+	MS results are back. Plates 69:84 contain data from depths 1-10,
+10-20 and 20-30 cm, for all plots/sites/positions (FUMIGATED samples only).
+	Results from deepest soil layer (30-50 cm), sent in Plates 85 and
+part of 86, are not back yet.
+=========================================================================
+UPDATE (March, 2008)
+
+	Litter, root and crown dry weights; soil moisture content; soil
+bulk density; soil porosity and % Gravel(>2mm) have been reported by Rav
+on March 11, 2008.
+=========================================================================
