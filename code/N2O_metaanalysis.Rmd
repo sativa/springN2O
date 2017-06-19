@@ -197,7 +197,7 @@ colnames(datain)<-c("date", "trt", "rep", "CH4", "CO2", "N2O_N", "year", "temp",
 datain$day<-yday(datain$date)
 ```
 
-```{r kbs raw fluxes IN N grams per ha per day}
+```{r kbs raw fluxes in N grams per ha per day}
 ggplot(datain, aes(x=day, y = N2O_N))+
          geom_jitter()+
          facet_wrap(~year)
