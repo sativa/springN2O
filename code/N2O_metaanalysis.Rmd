@@ -14,7 +14,7 @@ library(lubridate)
 ```
 
 ```{r read and select ars flux data}
-ars_fluxes<-read_csv("../data/ars_fluxes.csv", skip = 2)
+ars_fluxes<-read_csv("../data/ars/ars_fluxes.csv", skip = 2)
 
 fluxes<-ars_fluxes%>%
   select(`Experimental Unit ID`, Date, N2O, Air_Temp, Soil_Temp, Soil_Moisture)%>%
@@ -25,7 +25,7 @@ head(fluxes)
 ```
 
 ```{r read and select ars weather data}
-ars_weather<-read_csv("../data/ars_weather.csv", skip = 2)
+ars_weather<-read_csv("../data/ars/ars_weather.csv", skip = 2)
 
 weather<-ars_weather%>%
   select(`Site ID`, Date, `Temperate, air, daily, maximum, degrees Celsius`, `Temperate, air, daily, minimum, degrees Celsius`, Precip, `Total_Net_Radn`)%>%
@@ -36,15 +36,15 @@ weather<-ars_weather%>%
 head(weather)
 ```
 ```{r read and select daymet ars data, warning=TRUE}
-daymet_mandan<-read_csv("../data/daymet_mandan.csv", skip = 7)
+daymet_mandan<-read_csv("../data/ars/daymet_mandan.csv", skip = 7)
 daymet_mandan$town<-"Mandan"
-daymet_morris<-read_csv("../data/daymet_morris.csv", skip = 7)
+daymet_morris<-read_csv("../data/ars/daymet_morris.csv", skip = 7)
 daymet_morris$town<-"Morris"
-daymet_roseville<-read_csv("../data/daymet_roseville.csv", skip = 7)
+daymet_roseville<-read_csv("../data/ars/daymet_roseville.csv", skip = 7)
 daymet_roseville$town<-"Roseville"
-daymet_university_park<-read_csv("../data/daymet_university_park.csv", skip = 7)
+daymet_university_park<-read_csv("../data/ars/daymet_university_park.csv", skip = 7)
 daymet_university_park$town<-"University_Park"
-daymet_west_lafayette<-read_csv("../data/daymet_west_lafayette.csv", skip = 7)
+daymet_west_lafayette<-read_csv("../data/ars/daymet_west_lafayette.csv", skip = 7)
 daymet_west_lafayette$town<-"West_Lafayette"
 
 daymet<-rbind(daymet_mandan, daymet_morris, daymet_roseville, daymet_university_park, daymet_west_lafayette)

@@ -30,5 +30,13 @@ met<-x%>%
 ggplot(canada_fluxes, aes(x=DOY, y=FIN_N2O))+
   geom_point()+
   facet_grid(PLOT~YEAR)
+
+met%>%
+  group_by(YEAR, DOY, STAT_ID)%>%
+  summarise_all(funs(mean(., na.rm = TRUE)))%>%
+ggplot(aes(x=DOY, y=MIN_TA))+
+  geom_line()+
+  geom_hline(yintercept=0)+
+  facet_wrap(~YEAR)
 ```
 
