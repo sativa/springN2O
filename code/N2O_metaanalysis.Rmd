@@ -150,6 +150,8 @@ ggplot()+
 ```  
 ##What's important  
 
+Need dataframe with: site, year, day, N2O, min temp, max temp, avg temp, radiation, sand, silt, clay, organic matter, latitude, soil moisture, precipitation 
+
 What is the definition of a peak?  
   Number of days over average for each year
   Greatest day over average for each year  
