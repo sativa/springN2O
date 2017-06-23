@@ -1,0 +1,26 @@
+This info is for ERS, year 2004
+Snow depth from the logbook (cm)
+Values correspond to average conditions in each plot
+There was a major snowfall on DOY 26, but it isn't seen on DOY 27,
+because of blowing wind.  Thus I only put an "intermediate value"
+for Plot 4
+Put in intermediate values for Day 11, Day 21, Day 33 since major
+snowfall those days
+PPT. on DOY 64 and DOY 65, put in intermediate value for DOY 64
+Trace amounts of snow on DOY 104 
+No ppt. data for ec for mar and beyond (ignore this, just a reminder
+to Ivan)
+ACF added some data in agreement with logbook notes (DOY 2 and 5)
+Values beyond DOY 351 are rough guesses. No info in logbook
+
+
+
+This info is for ERS, year 2005
+Ryan Smith was in charge of field measurements and file updating
+Values correspond to average conditions in each plot
+snow arrived on DOY 006. No data due to unsafe driving condintions
+According to logbook, it was snowing on Apr 02-03/05 (heavy at times)
+ACF is therefore adding two rows to describe this event (doys 092 and 093).
+Stopped measuring/recording snow depths after DOY 118.
+Snow that arrived on DOY 328 was melted within several days.
+ACF is adding two lines (doy 360 and doy 364) according to logbook

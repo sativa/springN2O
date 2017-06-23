@@ -20,9 +20,15 @@ canada_fluxes<-read_csv("../data/canada/nitrogen/Hourly_N2O_Flux_2000-2005.csv",
                         na = "9999")%>%
   select(YEAR, DOY, TIME, FIN_N2O, PLOT)
 
-load(file="../data/canada/met/ERS_Meteorological_data_JD2522003-2005.RData")
+load(file="../data/canada/met/Daily_Air_Temperature_1999-2005.RData")
+air_temp<-x
 
-met<-x%>%
+load(file="../data/canada/met/ERS_Meteorological_data_1999-JD2442003.RData")
+metearly<-x%>%
+  select(YEAR, JD, TIME, ID, SOL_RAD, TOT_RAIN, AVG_TEMP)
+
+load(file="../data/canada/met/ERS_Meteorological_data_JD2522003-2005.RData")
+metlate<-x%>%
   select(YEAR, DOY, TIME, STAT_ID, AIR_TEMP, TEMP, MAX_TA, MIN_TA, SUN)
 ```  
 
