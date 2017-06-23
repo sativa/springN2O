@@ -34,7 +34,21 @@ weather<-ars_weather%>%
   filter(state != "ORP")
 
 head(weather)
-```
+```  
+
+```{r read and select ars weather station data for longitude and latitude}
+ars_latlong<-read_csv("../data/ars/ars_latlong.csv")
+
+latlong<-ars_latlong%>%
+  select(`Experimental Unit`, `Latitude of weather station, decimal degrees`, `Longitude of weather station, decimal degrees`)%>%
+  rename(lat = `Latitude of weather station, decimal degrees`, long = `Longitude of weather station, decimal degrees`)%>%
+  separate(`Experimental Unit`, c("state","exp"), sep = 3)%>%
+  filter(state != "ORP")
+
+head(latlong)
+```  
+
+Does not seem like I use this daymet data. . .yet.
 ```{r read and select daymet ars data, warning=TRUE}
 daymet_mandan<-read_csv("../data/ars/daymet_mandan.csv", skip = 7)
 daymet_mandan$town<-"Mandan"
@@ -58,10 +72,11 @@ head(daymet)
 ```
 
 
-```{r join and filter fluxes and weather data}
+```{r join and filter fluxes, weather, and location data}
 ars<-full_join(weather, fluxes, by=c("state", "Date"))
+ars<-full_join(ars, latlong, by = "state")
 
-colnames(ars)<-c("site", "nada", "date", "max_temp", "min_temp", "precip", "radn", "exp", "N2O", "air_temp", "soil_temp", "soil_moisture")
+colnames(ars)<-c("site", "nada", "date", "max_temp", "min_temp", "precip", "radn", "exp", "N2O", "air_temp", "soil_temp", "soil_moisture", "exp.again", "lat", "long")
 
 head(ars)
 ```
