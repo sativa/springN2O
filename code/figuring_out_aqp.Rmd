@@ -1,0 +1,20 @@
+---
+title: "Soil Data in R"
+author: "Ranae Dietzel"
+date: "June 23, 2017"
+output: html_document
+---
+
+I want to start with a latitude and longitude and end up with soil texture characteristics (sand, silt, clay) and organic matter content. 
+
+https://stackoverflow.com/questions/18706369/convert-latitude-longitude-to-state-plane-coordinates  
+```{r coordinates to . . .some other system}
+library(rgdal)
+library(sp)
+data = data.frame(long=c(41.20,40.05), lat=c(-86.14,-88.15))
+coordinates(data) <- ~ lat+long
+proj4string(data) <- CRS("+init=epsg:4326")
+data.proj <- spTransform(data, CRS("+init=epsg:2790"))
+data.proj
+```  
+

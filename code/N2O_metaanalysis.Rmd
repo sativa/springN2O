@@ -79,11 +79,19 @@ ars<-full_join(ars, latlong, by = "state")
 colnames(ars)<-c("site", "nada", "date", "max_temp", "min_temp", "precip", "radn", "exp", "N2O", "air_temp", "soil_temp", "soil_moisture", "exp.again", "lat", "long")
 
 head(ars)
-```
-```{r check these data out}
+```  
 
-ggplot(fluxes, (aes(x = state, y = N2O)))+
+```{r Alabama barely measured}
+filter(fluxes, state == "ALA")%>%
+ggplot((aes(x = Date, y = N2O)))+
   geom_jitter(alpha = .3)
+```  
+```{r check latitudes out}
+ggplot(ars, (aes(x = as.factor(lat), y = N2O)))+
+  geom_jitter(alpha =.3)  
+
+ggplot(ars, (aes(x = lat, y = state)))+
+  geom_point(alpha = .3)
 ```
 
 ```{r look for sites that arent cold enough}
