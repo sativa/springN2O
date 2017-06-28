@@ -47,6 +47,17 @@ latlong<-ars_latlong%>%
 
 head(latlong)
 ```  
+```{r read and select soils series for experiments}
+ars_soilseries<-read_csv("../data/ars/ars_soilseries.csv")
+
+soils<-ars_soilseries%>%
+  select(`Experimental Unit`, `Soil series`, `Landscape position`)%>%
+  rename(series = `Soil series`, spot = `Landscape position`)%>%
+  separate(`Experimental Unit`, c("state","exp"), sep = 3)%>%
+  filter(state != "ORP")
+
+head(soils)
+``` 
 
 Does not seem like I use this daymet data. . .yet.
 ```{r read and select daymet ars data, warning=TRUE}
