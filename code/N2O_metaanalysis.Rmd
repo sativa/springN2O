@@ -51,8 +51,8 @@ head(latlong)
 ars_soilseries<-read_csv("../data/ars/ars_soilseries.csv")
 
 soils<-ars_soilseries%>%
-  select(`Experimental Unit`, `Soil series`, `Landscape position`)%>%
-  rename(series = `Soil series`, spot = `Landscape position`)%>%
+  select(`Experimental Unit`, `Soil series`)%>%
+  rename(series = `Soil series`)%>%
   separate(`Experimental Unit`, c("state","exp"), sep = 3)%>%
   filter(state != "ORP")
 
@@ -86,8 +86,9 @@ head(daymet)
 ```{r join and filter fluxes, weather, and location data}
 ars<-full_join(weather, fluxes, by=c("state", "Date"))
 ars<-full_join(ars, latlong, by = "state")
+ars<-left_join(ars, soils, by = "state")
 
-colnames(ars)<-c("site", "nada", "date", "max_temp", "min_temp", "precip", "radn", "exp", "N2O", "air_temp", "soil_temp", "soil_moisture", "exp.again", "lat", "long")
+colnames(ars)<-c("site", "nada", "date", "max_temp", "min_temp", "precip", "radn", "exp", "N2O", "air_temp", "soil_temp", "soil_moisture", "exp.again", "lat", "long", "again.exp", "series")
 
 head(ars)
 ```  
