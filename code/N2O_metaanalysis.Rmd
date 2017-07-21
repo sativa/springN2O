@@ -11,6 +11,9 @@ knitr::opts_chunk$set(
 )
 library(tidyverse)
 library(lubridate)
+library(stringr)
+library(aqp)
+library(soilDB)
 ```
 
 ```{r read and select ars flux data}
@@ -31,7 +34,8 @@ weather<-ars_weather%>%
   select(`Site ID`, Date, `Temperate, air, daily, maximum, degrees Celsius`, `Temperate, air, daily, minimum, degrees Celsius`, Precip, `Total_Net_Radn`)%>%
   mutate(Date = mdy_hms(Date))%>%
   separate(`Site ID`, c("state","exp"), sep = 3)%>%
-  filter(state != "ORP")
+  filter(state != "ORP")%>%
+  select(-exp)
 
 head(weather)
 ```  
@@ -54,7 +58,11 @@ soils<-ars_soilseries%>%
   select(`Experimental Unit`, `Soil series`)%>%
   rename(series = `Soil series`)%>%
   separate(`Experimental Unit`, c("state","exp"), sep = 3)%>%
-  filter(state != "ORP")
+  filter(state != "ORP")%>%
+  #select(-exp)%>%
+  distinct()%>%
+  mutate(series = word(series, 1))%>%
+  na.omit()
 
 head(soils)
 ``` 
@@ -84,14 +92,40 @@ head(daymet)
 
 
 ```{r join and filter fluxes, weather, and location data}
-ars<-full_join(weather, fluxes, by=c("state", "Date"))
-ars<-full_join(ars, latlong, by = "state")
-ars<-left_join(ars, soils, by = "state")
+ars<-left_join(weather, fluxes, by=c("state", "Date"))
+ars<-left_join(ars, soils, by = c("state", "exp"))
+ars<-left_join(ars, ars_soils, by = "series" )
+#ars<-left_join(ars, latlong, by = "state")
+
 
 colnames(ars)<-c("site", "nada", "date", "max_temp", "min_temp", "precip", "radn", "exp", "N2O", "air_temp", "soil_temp", "soil_moisture", "exp.again", "lat", "long", "again.exp", "series")
 
 head(ars)
 ```  
+
+```{r get and add soil data}  
+
+our_soils<-ars%>%
+  distinct(series)%>%
+  mutate(dom_soil = word(series, 1))%>%
+  distinct(dom_soil)%>%
+  na.omit()
+
+get_soil_data <- function(series){
+  horizons(fetchKSSL(series))%>%
+    select(pedon_key, hzn_desgn, sand, silt, clay, oc, ph_h2o)%>%
+    filter(grepl('A', hzn_desgn))%>%
+    select(-c(hzn_desgn, pedon_key))%>%
+    summarise_each(funs(mean(., na.rm = TRUE)))%>%
+    mutate(series = series)  
+}  
+
+brute_errors<-lapply(our_soils$dom_soil, function(series) try(get_soil_data(series)))
+
+ars_soils<-bind_rows(Filter(function(series) !inherits(series, "try-error"), brute_errors))
+
+
+```
 
 ```{r Alabama barely measured}
 filter(fluxes, state == "ALA")%>%
