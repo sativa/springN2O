@@ -98,7 +98,11 @@ ars<-left_join(ars, ars_soils, by = "series" )
 #ars<-left_join(ars, latlong, by = "state")
 
 
-colnames(ars)<-c("site", "nada", "date", "max_temp", "min_temp", "precip", "radn", "exp", "N2O", "air_temp", "soil_temp", "soil_moisture", "exp.again", "lat", "long", "again.exp", "series")
+colnames(ars)<-c("site", "date", "max_temp", "min_temp", "precip", "radn", "exp", "N2O", "air_temp", "soil_temp", "soil_moisture", "series", "sand", "silt", "clay", "oc", "ph_h2o")
+
+ars<-ars%>%
+  mutate(year = year(date), month = month(date), day = yday(date))
+
 
 head(ars)
 ```  
@@ -202,6 +206,18 @@ ggplot()+
             aes(x=yday, y=(daymet_tmax*10)), color="red")+
   facet_wrap(~year.y)
 ```  
+```{r mo-town joyplot}
+wut<-ars%>%
+  filter(site %in% c("MNM", "NDM") & year %in% c(2004:2008))%>%
+  select(site, date, year, month, day, N2O, air_temp)%>%
+  group_by(site, date)%>%
+  summarise_each(funs(mean(., na.rm=TRUE)))%>%
+  ggplot(aes(x=day, y= as.factor(year), height=N2O, group = site, color=site, fill=site))+
+  #geom_point()
+  geom_joy(stat = "identity")
+```
+
+
 ```{r IN spring N20}
 ggplot()+
   geom_point(data = filter(both_ars_cold, town == "West_Lafayette"& year.y %in% c(2004:2012)), aes(x=yday, y=N2O))+
