@@ -1,17 +1,10 @@
 # setup ----
-knitr::opts_chunk$set(
-  echo = FALSE,
-  message = FALSE,
-  warning = FALSE,
-  include=FALSE
-)
-
 library(tidyverse)
 library(lubridate)
 library(stringr)
 library(aqp)
 library(soilDB)
-----
+
 
 # read and select ars flux data ----
 ars_fluxes<-read_csv("../data/ars/ars_fluxes.csv", skip = 2)
@@ -22,7 +15,7 @@ fluxes<-ars_fluxes%>%
   separate(`Experimental Unit ID`, c("state","exp"), sep = 3)
 
 head(fluxes)
-----
+
   
 # read and select ars weather data ----
 ars_weather<-read_csv("../data/ars/ars_weather.csv", skip = 2)
@@ -36,7 +29,7 @@ weather<-ars_weather%>%
   mutate(Total_Net_Radn = as.numeric(Total_Net_Radn))
 
 head(weather)
-----   
+
 
 # read and select ars weather station data for longitude and latitude ----
 ars_latlong<-read_csv("../data/ars/ars_latlong.csv")
@@ -48,7 +41,6 @@ latlong<-ars_latlong%>%
   filter(state != "ORP")
 
 head(latlong)
-----   
 
 # read and select soils series for experiments ----
 ars_soilseries<-read_csv("../data/ars/ars_soilseries.csv")
@@ -64,7 +56,6 @@ soils<-ars_soilseries%>%
   na.omit()
 
 head(soils)
-----
 
 # read and select daymet ars data ----
 daymet_mandan<-read_csv("../data/ars/daymet_mandan.csv", skip = 7)
@@ -108,7 +99,7 @@ get_soil_data <- function(series){
 brute_errors<-lapply(our_soils$dom_soil, function(series) try(get_soil_data(series)))
 
 ars_soils<-bind_rows(Filter(function(series) !inherits(series, "try-error"), brute_errors))
-----  
+ 
 
 # join and filter fluxes, weather, and location data ----
 ars<-left_join(weather, fluxes, by=c("state", "Date"))
@@ -123,7 +114,7 @@ colnames(ars)<-c("site", "date", "max_temp", "min_temp",
                  "sand", "silt", "clay", "oc", "ph_h2o", "exp.y", "lat", "long")
 
 ars<-ars%>%
-  select(exp.y)%>%
+  select(-exp.y)%>%
   mutate(year = year(date), month = month(date), day = yday(date))
 
 
@@ -131,7 +122,7 @@ head(ars)
 ---- 
     
   
-# define peak by "above average" for now ----
+# define peak by "two std dev above mean" for now ----
 peaks<-ars%>%
   group_by(site)%>%
   summarise(mean_flux=mean(N2O, na.rm = TRUE))%>%
@@ -160,17 +151,50 @@ ggplot(aes(x=site, y=N2O))+
   geom_boxplot()+
   facet_wrap(~season)  
 
-# how R fits a model of N2O over time by site ----
-
+# how R fits a model of N2O over time by site ----  
 ars%>%
   select(-exp, -series)%>%
   group_by(site, date, year, month, day)%>%
   summarise_each(funs(mean(., na.rm = TRUE)))%>%
-  #filter(site == "MNM")%>%
+  filter(site == "MNM" & year %in% 2004:2008)%>%
   ggplot(aes(x = day, y=N2O))+
   geom_point()+
   geom_smooth()+
   geom_vline(xintercept=100)+
-  facet_wrap(~site)
+  facet_grid(year~site)
 
-# 
+# looking only at sites that freeze ----
+ars_cold<-ars %>% filter(site %in% c("INA", "INT", "INW", "MNM", "MNR", "NDM", "NEM", "NVN", "PAH"))%>%
+  mutate(town = ifelse((site %in% c("INA", "INT", "INW")), "West_Lafayette",
+                       ifelse((site == "MNM"), "Morris",
+                              ifelse((site == "MNR"), "Roseville",
+                                     ifelse((site %in% c("NDM", "NEM", "NVN")), "Mandan",
+                                            ifelse((site == "PAH"), "University_Park", "NA" ))))))
+ars_cold%>%
+  select(-exp, -series)%>%
+  group_by(site, town, date, year, month, day)%>%
+  summarise_each(funs(mean(., na.rm = TRUE)))%>%
+  filter(year %in% 2004:2011)%>%
+  ggplot(aes(x = day, y=N2O))+
+  geom_point()+
+  geom_smooth()+
+  geom_vline(xintercept=100)+
+  facet_grid(year~site)
+
+ars_cold%>%
+  select(-exp, -series)%>%
+  group_by(site, town, date, year, month, day)%>%
+  summarise_each(funs(mean(., na.rm = TRUE)))%>%
+  filter(year %in% 2004:2011)%>%
+  ggplot((aes(x = town, y = N2O)))+
+  geom_jitter(alpha = .3) 
+
+ars_cold%>%
+  select(-exp, -series)%>%
+  group_by(site, town, date, year, month, day)%>%
+  summarise_each(funs(mean(., na.rm = TRUE)))%>%
+ggplot(aes(N2O, fill=town, color=town))+
+  geom_density(alpha =.1)+
+  xlim(-15, 35)+
+  facet_wrap(~year)
+
