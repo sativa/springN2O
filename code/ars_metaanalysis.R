@@ -204,3 +204,43 @@ ggplot(aes(N2O, fill=town, color=town))+
   xlim(-15, 35)+
   facet_wrap(~year)
 
+  
+
+#define time period of interest lazy way for now (May 30) ----
+   #safe to say it doesn't freeze anywhere after 150 days
+ars_cold%>%
+  filter(day<150)%>%
+  ggplot(aes(x=day, y=min_temp))+
+  geom_point()+
+  geom_hline(yintercept=0)+
+  facet_grid(site~year)
+
+  #we end up with the average N2O for each site, each year (response attempt #1)
+ars_spring<-ars_cold%>% 
+  filter(day<150)%>%
+  select(-exp, -series)%>%
+  group_by(site, town, year)%>%
+  summarise(avg_N2O = (mean(N2O, na.rm = TRUE)))
+
+ggplot(ars_spring, aes(x=year,y=avg_N2O))+
+  geom_point()+
+  facet_wrap(~site)
+
+#Calculate number of days 0C was reached ----
+   #need to repartition year Oct-May
+   #let's skip for now and just get a plot from Jan-May!
+ars_fdd<-ars_cold%>%
+  filter(day<150)%>%
+  mutate(fdd = ifelse((min_temp <0), 1, 0))%>%
+  group_by(year, site, town)%>%
+  mutate(cum_fdd = cumsum(fdd))%>%
+  summarise(annual_fdd = max(cum_fdd))%>%
+  right_join(ars_spring, by = c("year", "site", "town"))
+
+ggplot(filter(ars_fdd, site != "MNM"), aes(x=annual_fdd, y=avg_N2O, color=site))+
+  geom_point()+
+  facet_wrap(~site)
+
+
+
+  
