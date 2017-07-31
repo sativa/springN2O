@@ -124,17 +124,23 @@ head(ars)
   
 # define peak by "two std dev above mean" for now ----
 peaks<-ars%>%
-  group_by(site)%>%
-  summarise(mean_flux=mean(N2O, na.rm = TRUE))%>%
-  right_join(ars, by = "site")%>%
+  filter(N2O > 0)%>%
   select(-exp, -series)%>%
   group_by(site, date, year, month, day)%>%
-  summarise_each(funs(mean(., na.rm = TRUE)))%>%
-  filter(N2O > mean_flux)
+  summarise_each(funs(mean(., na.rm = TRUE)))
+  
+  group_by(site)%>%
+  summarise(mean_flux=mean(N2O, na.rm = TRUE), std_dev_flux=sd(N2O, na.rm = TRUE))%>%
+  mutate(peak_threshold = mean_flux + (2*std_dev_flux))%>%
+  right_join(ars, by = "site")%>%
+  filter(N2O > peak_threshold)%>%
 
-ggplot(peaks, aes(x=date, y=N2O))+
+  
+
+ggplot(filter(peaks, site == "MNM"), aes(x=day, y=N2O, color=as.factor(year)))+
   geom_point()+
-  facet_wrap(~ site)
+  geom_smooth()+
+  facet_wrap(~ year)
 
 
 # split sites by when peaks occur, kind of dumb ----
@@ -154,8 +160,8 @@ ggplot(aes(x=site, y=N2O))+
 # how R fits a model of N2O over time by site ----  
 ars%>%
   select(-exp, -series)%>%
-  group_by(site, date, year, month, day)%>%
-  summarise_each(funs(mean(., na.rm = TRUE)))%>%
+  #group_by(site, date, year, month, day)%>%
+  #summarise_each(funs(mean(., na.rm = TRUE)))%>%
   filter(site == "MNM" & year %in% 2004:2008)%>%
   ggplot(aes(x = day, y=N2O))+
   geom_point()+

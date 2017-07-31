@@ -278,6 +278,10 @@ Latitude and N2O
 Soil texture  
 Soil CN  
 
+I need to figure out what I want from these data.
+Starting with spring thaws
+  How much can I improve on Wagner-Riddle's Nature paper?
+
 ```{r kbs data}  
 datain<-read_csv("../data/KBS.csv", skip=19)
 colnames(datain)<-c("date", "trt", "rep", "CH4", "CO2", "N2O_N", "year", "temp", "crop")
