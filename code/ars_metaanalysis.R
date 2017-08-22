@@ -74,14 +74,12 @@ daymet<-rbind(daymet_mandan, daymet_morris, daymet_roseville, daymet_university_
 daymet$date<-as.Date(strptime(paste(daymet$year, daymet$yday), format="%Y%j"))
 colnames(daymet)<-c("year", "yday", "daymet_prcp", "daymet_radn", "daymet_tmax", "daymet_tmin", "town", "date")
 
-#daymet<-mutate(daymet, if_else )
-
 head(daymet)
    
 
 # get and add soil data ----  
 
-our_soils<-ars%>%
+our_soils<-soils%>%
   distinct(series)%>%
   mutate(dom_soil = word(series, 1))%>%
   distinct(dom_soil)%>%
@@ -227,9 +225,8 @@ ggplot(ars_spring, aes(x=year,y=avg_N2O))+
   facet_wrap(~site)
 
 #Calculate number of days 0C was reached ----
-   #need to repartition year June-June (keep winter period together)
-   #let's skip for now and just get a plot from Jan-May!
-
+   #need to re-partition year June-June (keep winter period together)
+   
 ars_cold<-ars_cold%>%
   mutate(spring_year = ifelse((date >"2003-06-02" & date < "2004-06-01"), 2004,
                         ifelse((date >"2004-06-02" & date < "2005-06-01"), 2005,
@@ -256,9 +253,9 @@ ggplot(filter(ars_fdd, site != "MNM"), aes(x=annual_fdd, y=avg_N2O, color=site))
 howbout<-ars_fdd%>%
 mutate(lannual_fdd = log2(annual_fdd), lavg_N2O = log2(avg_N2O))
 
-ggplot(filter(howbout, site != "MNM"), aes(x=annual_fdd, y=avg_N2O))+
-  geom_point()+
-  geom_smooth(method = "lm")
+#ggplot(filter(howbout, site != "MNM"), aes(x=annual_fdd, y=avg_N2O))+
+  #geom_point()+
+  #geom_smooth(method = "lm")
   
 try_mod<-lm(avg_N2O ~ annual_fdd, data = ars_fdd)
 
@@ -286,6 +283,7 @@ ggplot(filter(ars_formod, year %in% 2004:2011), aes(x=oc, y=avg_N2O, color=site)
 ggplot(ars_formod, aes(x=site, y=oc))+
   geom_point()
 
+#No idea what I'm doing here - just copying r4ds
 crazy_mod<- lm(avg_N2O ~ annual_fdd + oc + clay, data=ars_formod)
 
 grid<-ars_formod%>%
