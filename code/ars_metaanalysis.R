@@ -1,6 +1,7 @@
 # setup ----
 library(tidyverse)
 library(lubridate)
+library(modelr)
 library(stringr)
 library(aqp)
 library(soilDB)
@@ -245,12 +246,35 @@ ars_fdd<-ars_cold%>%
   summarise(annual_fdd = max(cum_fdd))%>%
   rename(year = spring_year)%>%
   right_join(ars_spring, by = c("year", "site", "town"))
-
-ggplot(filter(ars_fdd, site != "MNM"), aes(x=log(annual_fdd), y=log(avg_N2O), color=site))+
-  geom_point()+
-  facet_wrap(~site)
 ###########So, now we have ars_fdd as our dataframe for modeling#########
 
+#But we could also define fdd by cumulative degrees
+
+ #Hey, try cumulative degress on days <0 -tomorrow
+
+ars_degrees<-ars_cold%>%
+  filter(day<150)%>%
+  group_by(spring_year, site, town)%>%
+  mutate(cum_degrees = cumsum(min_temp))%>%
+  summarise(annual_degrees = max(cum_degrees))%>%
+  rename(year = spring_year)%>%
+  right_join(ars_spring, by = c("year", "site", "town"))
+
+#Guess I could just put them together
+
+ars_for_mod<-ars_fdd%>%
+  left_join(ars_degrees, by = c("year", "site", "town", "avg_N2O"))
+
+ggplot(nomo, aes(x=log(annual_degrees), y = log(avg_N2O)))+
+  geom_point()
+
+#Take out Morris, MN because it is very different from all the other sites
+
+nomo<-ars_for_mod%>%
+  filter(site != "MNM")%>%
+  na.omit()
+
+nomomod<-lm(log(avg_N2O) ~ log(annual_fdd), data=nomo)
 
 
 
