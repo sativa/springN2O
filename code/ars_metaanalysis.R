@@ -246,51 +246,14 @@ ars_fdd<-ars_cold%>%
   rename(year = spring_year)%>%
   right_join(ars_spring, by = c("year", "site", "town"))
 
-ggplot(filter(ars_fdd, site != "MNM"), aes(x=annual_fdd, y=avg_N2O, color=site))+
+ggplot(filter(ars_fdd, site != "MNM"), aes(x=log(annual_fdd), y=log(avg_N2O), color=site))+
   geom_point()+
   facet_wrap(~site)
+###########So, now we have ars_fdd as our dataframe for modeling#########
 
-howbout<-ars_fdd%>%
-mutate(lannual_fdd = log2(annual_fdd), lavg_N2O = log2(avg_N2O))
 
-#ggplot(filter(howbout, site != "MNM"), aes(x=annual_fdd, y=avg_N2O))+
-  #geom_point()+
-  #geom_smooth(method = "lm")
-  
-try_mod<-lm(avg_N2O ~ annual_fdd, data = ars_fdd)
 
-grid <- ars_fdd %>% 
-  filter(site != "MNM")%>%
-  na.omit()%>%
-  data_grid(annual_fdd = seq_range(annual_fdd, 20)) %>% 
-  add_predictions(try_mod, "avg_N2O")  
 
-ggplot(filter(ars_fdd, site != "MNM"), aes(annual_fdd, avg_N2O)) + 
-  geom_hex(bins = 50) + 
-  geom_line(data = grid, colour = "red", size = 1)
- 
 
-#Okay, so fdd is established, but not very useful. Let's add the other factors back in  
 
-ars_formod<-ars_fdd%>%
-  left_join(ars_cold, by = c("year", "site", "town"))%>%
-  filter(site != "MNM")
 
-ggplot(filter(ars_formod, year %in% 2004:2011), aes(x=oc, y=avg_N2O, color=site))+
-  geom_point()+
-  facet_wrap(~year)
-
-ggplot(ars_formod, aes(x=site, y=oc))+
-  geom_point()
-
-#No idea what I'm doing here - just copying r4ds
-crazy_mod<- lm(avg_N2O ~ annual_fdd + oc + clay, data=ars_formod)
-
-grid<-ars_formod%>%
-  data_grid(clay, .model = crazy_mod)%>%
-  add_predictions(crazy_mod)  
-
-ggplot(grid, aes(clay, pred))+
-  geom_point()
-
-motownexp<-filter(ars_cold, site == "MNM")
