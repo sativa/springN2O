@@ -226,8 +226,8 @@ ggplot(ars_spring, aes(x=year,y=avg_N2O))+
   facet_wrap(~site)
 
 #Calculate number of days 0C was reached ----
-   #need to re-partition year June-June (keep winter period together)
    
+  #need to re-partition year June-June (keep winter period together)
 ars_cold<-ars_cold%>%
   mutate(spring_year = ifelse((date >"2003-06-02" & date < "2004-06-01"), 2004,
                         ifelse((date >"2004-06-02" & date < "2005-06-01"), 2005,
@@ -237,7 +237,8 @@ ars_cold<-ars_cold%>%
                           ifelse((date >"2008-06-02" & date < "2009-06-01"), 2009,
                              ifelse((date >"2009-06-02" & date < "2010-06-01"), 2010,
                                 ifelse((date >"2010-06-02" & date < "2011-06-01"), 2011, 0)))))))))
-
+  
+  #sum up the days each winter that air temp reached 0 or lower (freeze day)
 ars_freeze_day<-ars_cold%>%
   filter(day<150)%>%
   mutate(freeze_day = ifelse((min_temp <0), 1, 0))%>%
@@ -247,12 +248,9 @@ ars_freeze_day<-ars_cold%>%
   summarise(annual_freeze_day = max(cum_freeze_day))%>%
   rename(year = spring_year)%>%
   right_join(ars_spring, by = c("year", "site", "town"))
-###########So, now we have ars_fdd as our dataframe for modeling#########
 
-#But we could also define fdd by cumulative degrees
-
- day <0
-
+  #sum up the actual minimum temperatures to define coldest years and sites (freezing degree day(fdd))
+  #fewer fdd = colder winter
 ars_fdd<-ars_cold%>%
   filter(day<150)%>%
   group_by(spring_year, site, town)%>%
@@ -262,26 +260,30 @@ ars_fdd<-ars_cold%>%
   rename(year = spring_year)%>%
   right_join(ars_spring, by = c("year", "site", "town"))
 
-#Guess I could just put them together
-
-ars_for_mod<-ars_freeze_day%>%
+  #Put freeze days and fdd together to model as function of winter coldness
+ars_for_cold_mod<-ars_freeze_day%>%
   left_join(ars_fdd, by = c("year", "site", "town", "avg_N2O"))
+  
+  #and let's add site characteristics in there because they'll come in later
+ars_for_annual_mod<-ars%>%
+  select(site, sand, silt, clay, oc, ph_h2o)%>%
+  group_by(sand)%>%
+  distinct(.keep_all=TRUE)%>%
+  na.omit()%>%
+  full_join(ars_for_cold_mod, by = "site")
 
-#Log log looks better
+#########Now ready to try some modeling for average annual spring emissions##########
 
-ggplot(ars_for_mod, aes(x=log(annual_degrees), y = log(avg_N2O),  color=site))+
-  geom_point(size=4)#+
-  #geom_smooth(method="lm")
 
-allmod<-lm(log(avg_N2O) ~ log(annual_degrees), data=ars_for_mod)
+ggplot(ars_for_annual_mod, aes(x=(annual_freeze_day), y = (avg_N2O),  color=site))+
+  geom_point(size=4)
 
-#Filter out Morris, MN because it is very different from all the other sites
 
-nomo<-ars_for_mod%>%
-  filter(site != "MNM")%>%
-  na.omit()
 
-nomomod<-lm(log(avg_N2O) ~ log(annual_fdd), data=nomo)
+
+
+
+
 
 
 
