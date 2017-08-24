@@ -205,7 +205,7 @@ ggplot(aes(N2O, fill=town, color=town))+
 
   
 
-#define time period of interest lazy way for now (May 30) ----
+# define time period of interest (for now (May 30)) ----
    #safe to say it doesn't freeze anywhere after 150 days
 ars_cold%>%
   filter(day<150)%>%
@@ -214,7 +214,7 @@ ars_cold%>%
   geom_hline(yintercept=0)+
   facet_grid(site~year)
 
-  #we end up with the average N2O for each site, each year (response attempt #1)
+# make average spring N2O for a response variable ----
 ars_spring<-ars_cold%>% 
   filter(day<150)%>%
   select(-exp, -series)%>%
@@ -225,7 +225,7 @@ ggplot(ars_spring, aes(x=year,y=avg_N2O))+
   geom_point()+
   facet_wrap(~site)
 
-#Calculate number of days 0C was reached ----
+# make annual, temperature-based variables for factors ----
    
   #need to re-partition year June-June (keep winter period together)
 ars_cold<-ars_cold%>%
@@ -264,21 +264,65 @@ ars_fdd<-ars_cold%>%
 ars_for_cold_mod<-ars_freeze_day%>%
   left_join(ars_fdd, by = c("year", "site", "town", "avg_N2O"))
   
-  #and let's add site characteristics in there because they'll come in later
+#Add site characteristic data back in for use in modeling ----
 ars_for_annual_mod<-ars%>%
   select(site, sand, silt, clay, oc, ph_h2o)%>%
   group_by(sand)%>%
   distinct(.keep_all=TRUE)%>%
-  na.omit()%>%
-  full_join(ars_for_cold_mod, by = "site")
-
-#########Now ready to try some modeling for average annual spring emissions##########
+  full_join(ars_for_cold_mod, by = "site")%>%
+  na.omit
 
 
+#########Now ready to try some modeling for average annual spring emissions########## ----
+
+ #freeze days looks easiest
 ggplot(ars_for_annual_mod, aes(x=(annual_freeze_day), y = (avg_N2O),  color=site))+
   geom_point(size=4)
 
+mod_cold<-lm(avg_N2O ~ annual_freeze_day, data=ars_for_annual_mod)
 
+grid<-ars_for_annual_mod%>%
+  data_grid(annual_freeze_day = seq_range(annual_freeze_day, 20))%>%
+  add_predictions(mod_cold, "avg_N2O")
+
+ggplot(ars_for_annual_mod, aes(annual_freeze_day, avg_N2O))+
+  geom_point()+
+  geom_line(data=grid, color="red", size=1) #same as we would get with geom_smooth(method = "lm")
+
+ars_for_annual_mod<-ars_for_annual_mod%>%
+  add_residuals(mod_cold, "resid")
+
+ggplot(ars_for_annual_mod, aes(annual_freeze_day, resid))+
+  geom_point()
+
+  #let's add more factors
+
+mod_cold_more<-lm(avg_N2O ~ annual_freeze_day + oc + clay, data=ars_for_annual_mod)
+  
+grid<- ars_for_annual_mod%>%
+  data_grid(clay, .model = mod_cold_more)%>%
+  add_predictions(mod_cold_more)
+
+ggplot(grid, aes(oc, pred))+
+  geom_point()
+
+ars_for_annual_mod<-ars_for_annual_mod%>%
+  add_residuals(mod_cold_more, "resid")
+
+ggplot(ars_for_annual_mod, aes(oc, resid))+
+  geom_point()
+
+  #Try stepwise regression
+fit<-lm(avg_N2O ~ annual_freeze_day + oc + clay + ph_h2o, data=ars_for_annual_mod)
+step<- stepAIC(fit, direction="both")
+
+step$anova
+
+  #Try all-subsets regression
+
+attach(ars_for_annual_mod)
+
+leaps<-regsubsets(avg_N2O ~ annual_freeze_day + oc + clay + ph_h2o, data=ars_for_annual_mod, nbest=10)
 
 
 
