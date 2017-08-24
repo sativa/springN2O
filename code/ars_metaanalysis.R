@@ -240,17 +240,17 @@ ars_cold<-ars_cold%>%
 
 ars_fdd<-ars_cold%>%
   filter(day<150)%>%
-  mutate(fdd = ifelse((min_temp <0), 1, 0))%>%
+  mutate(freeze_day = ifelse((min_temp <0), 1, 0))%>%
   group_by(spring_year, site, town)%>%
-  mutate(cum_fdd = cumsum(fdd))%>%
-  summarise(annual_fdd = max(cum_fdd))%>%
+  mutate(cum_freeze_day = cumsum(freeze_day))%>%
+  summarise(annual_freeze_day = max(cum_freeze_day))%>%
   rename(year = spring_year)%>%
   right_join(ars_spring, by = c("year", "site", "town"))
 ###########So, now we have ars_fdd as our dataframe for modeling#########
 
 #But we could also define fdd by cumulative degrees
 
- #Hey, try cumulative degress on days <0 -tomorrow
+ day <0
 
 ars_degrees<-ars_cold%>%
   filter(day<150)%>%
@@ -265,10 +265,15 @@ ars_degrees<-ars_cold%>%
 ars_for_mod<-ars_fdd%>%
   left_join(ars_degrees, by = c("year", "site", "town", "avg_N2O"))
 
-ggplot(nomo, aes(x=log(annual_degrees), y = log(avg_N2O)))+
-  geom_point()
+#Log log looks better
 
-#Take out Morris, MN because it is very different from all the other sites
+ggplot(ars_for_mod, aes(x=log(annual_degrees), y = log(avg_N2O),  color=site))+
+  geom_point(size=4)#+
+  #geom_smooth(method="lm")
+
+allmod<-lm(log(avg_N2O) ~ log(annual_degrees), data=ars_for_mod)
+
+#Filter out Morris, MN because it is very different from all the other sites
 
 nomo<-ars_for_mod%>%
   filter(site != "MNM")%>%
