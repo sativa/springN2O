@@ -238,10 +238,11 @@ ars_cold<-ars_cold%>%
                              ifelse((date >"2009-06-02" & date < "2010-06-01"), 2010,
                                 ifelse((date >"2010-06-02" & date < "2011-06-01"), 2011, 0)))))))))
 
-ars_fdd<-ars_cold%>%
+ars_freeze_day<-ars_cold%>%
   filter(day<150)%>%
   mutate(freeze_day = ifelse((min_temp <0), 1, 0))%>%
   group_by(spring_year, site, town)%>%
+  distinct(date, .keep_all=TRUE)%>%
   mutate(cum_freeze_day = cumsum(freeze_day))%>%
   summarise(annual_freeze_day = max(cum_freeze_day))%>%
   rename(year = spring_year)%>%
@@ -252,18 +253,19 @@ ars_fdd<-ars_cold%>%
 
  day <0
 
-ars_degrees<-ars_cold%>%
+ars_fdd<-ars_cold%>%
   filter(day<150)%>%
   group_by(spring_year, site, town)%>%
-  mutate(cum_degrees = cumsum(min_temp))%>%
-  summarise(annual_degrees = max(cum_degrees))%>%
+  distinct(date, .keep_all=TRUE)%>%
+  mutate(cum_fdd = cumsum(min_temp))%>%
+  summarise(annual_fdd = max(cum_fdd))%>%
   rename(year = spring_year)%>%
   right_join(ars_spring, by = c("year", "site", "town"))
 
 #Guess I could just put them together
 
-ars_for_mod<-ars_fdd%>%
-  left_join(ars_degrees, by = c("year", "site", "town", "avg_N2O"))
+ars_for_mod<-ars_freeze_day%>%
+  left_join(ars_fdd, by = c("year", "site", "town", "avg_N2O"))
 
 #Log log looks better
 
