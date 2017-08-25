@@ -274,6 +274,7 @@ ars_for_annual_mod<-ars%>%
 
 
 #########Now ready to try some modeling for average annual spring emissions########## ----
+  #ars_for_annual_mod is the dataframe resulting from all the above chunks
 
  #freeze days looks easiest
 ggplot(ars_for_annual_mod, aes(x=(annual_freeze_day), y = (avg_N2O),  color=site))+
