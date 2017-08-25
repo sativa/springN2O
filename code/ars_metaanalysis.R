@@ -269,14 +269,15 @@ ars_for_annual_mod<-ars%>%
   select(site, sand, silt, clay, oc, ph_h2o)%>%
   group_by(sand)%>%
   distinct(.keep_all=TRUE)%>%
-  full_join(ars_for_cold_mod, by = "site")%>%
-  na.omit
+  group_by(site)%>%
+  summarize_each(funs(mean(., na.rm = TRUE)))%>%
+  full_join(ars_for_cold_mod, by = "site")
 
 
 #########Now ready to try some modeling for average annual spring emissions########## ----
   #ars_for_annual_mod is the dataframe resulting from all the above chunks
 
- #freeze days looks easiest
+ #freeze days is more linear than freezing degree days (fdd)
 ggplot(ars_for_annual_mod, aes(x=(annual_freeze_day), y = (avg_N2O),  color=site))+
   geom_point(size=4)
 
@@ -320,13 +321,15 @@ step<- stepAIC(fit, direction="both")
 step$anova
 
   #Try all-subsets regression
+library(leaps)
 
 attach(ars_for_annual_mod)
 
 leaps<-regsubsets(avg_N2O ~ annual_freeze_day + oc + clay + ph_h2o, data=ars_for_annual_mod, nbest=10)
 
 
-
+ggplot(ars_for_annual_mod, aes(x=site, y=ph_h2o))+
+  geom_point()
 
 
 
