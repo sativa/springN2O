@@ -215,6 +215,7 @@ ars_cold%>%
   facet_grid(site~year)
 
 # make average spring N2O for a response variable ----
+  #may want to try converting average N2O into cumulative N2O like Wagner-Riddle
 ars_spring<-ars_cold%>% 
   filter(day<150)%>%
   select(-exp, -series)%>%
@@ -299,28 +300,39 @@ ggplot(ars_for_annual_mod, aes(annual_freeze_day, resid))+
 
   #let's add more factors
 
-mod_cold_more<-lm(avg_N2O ~ annual_freeze_day + oc + clay, data=ars_for_annual_mod)
+mod_cold_more<-lm(avg_N2O ~ annual_freeze_day + oc + clay + ph_h2o, data=ars_for_annual_mod)
   
 grid<- ars_for_annual_mod%>%
   data_grid(clay, .model = mod_cold_more)%>%
   add_predictions(mod_cold_more)
 
-ggplot(grid, aes(oc, pred))+
+ggplot(grid, aes(annual_freeze_day, pred))+  
+  geom_point()
+
+ggplot(grid, aes(oc, pred))+  
+  geom_point()
+
+ggplot(grid, aes(ph_h2o, pred))+  
+  geom_point()
+
+ggplot(grid, aes(clay, pred))+  #At this point, I just don't get it anymore. Everything but clay is at a fixed value? 
   geom_point()
 
 ars_for_annual_mod<-ars_for_annual_mod%>%
   add_residuals(mod_cold_more, "resid")
 
-ggplot(ars_for_annual_mod, aes(oc, resid))+
+ggplot(ars_for_annual_mod, aes(clay, resid))+
   geom_point()
 
   #Try stepwise regression
+library(MASS)
+
 fit<-lm(avg_N2O ~ annual_freeze_day + oc + clay + ph_h2o, data=ars_for_annual_mod)
 step<- stepAIC(fit, direction="both")
 
 step$anova
 
-  #Try all-subsets regression
+  #Try all-subsets regression  No idea here - just a copy-paste, cannot interpret results
 library(leaps)
 
 attach(ars_for_annual_mod)
@@ -332,7 +344,7 @@ ggplot(ars_for_annual_mod, aes(x=site, y=ph_h2o))+
   geom_point()
 
 
-
+mod_cold_more2<-lm(avg_N2O ~ annual_freeze_day + oc, data=ars_for_annual_mod)
 
 
 
