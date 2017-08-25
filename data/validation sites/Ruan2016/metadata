@@ -1,0 +1,109 @@
+ReadMe file for "Reduced snow cover increases wintertime nitrous oxide (N2O) emissions from an agricultural soil in the upper US Midwest", L Ruan and G P Robertson
+
+This file describes the spreadsheets contained within "dataset_winter_n2o.xlsx" for the above publication. For further inquiries please contact Leilei Ruan (ruanleilei@gmail.com) or Phil Robertson (robert30@msu.edu).	
+
+Speadsheets in "dataset_winter_n2o.xlsx":
+1) winter_weather
+2) snowfall_depth
+3) soil_temp
+4) n2o_n_flux
+5) cum_n2o_n_flux
+6) soil_inorganic_n
+7) soil_aggregates
+
+Each spreadsheet is described below along with an explanation of variates. Please note 1) blank cells indicate data are missing or not available and 2) the associated datatable at http://lter.kbs.msu.edu/datatables for each spreadsheet is also given.
+
+1) Spreadsheet: winter_weather
+
+Description: Historical record of wintertime weather measured at the Gull Lake Biological Station COOP (#203504) for winters 1950-2013; Data used in Figure S1. Datatable http://lter.kbs.msu.edu/datatables/530 from data source http://lter.kbs.msu.edu/datatables/31.	
+
+Variate			Description
+year			the year the winter ended
+precip as snow		the amount of precipitation as snow for year (November - April) (mm)
+days with snow cover	the number of days that ground was covered with snow (November - April) (number)
+daily air temp c	average temperature between December 1st to March 31st  (Celsius)
+
+
+
+2) Spreadsheet:  snowfall_depth
+
+Description: Daily measurements of snowfall and snow depth at the Gull Lake Biological Station COOP (#203504) for winters 2011-2013. Data used in Figures 1A and S2A. Datatable http://lter.kbs.msu.edu/datatables/529 from data source http://lter.kbs.msu.edu/datatables/31.	
+
+Variate			Description
+year			the year the winter ended
+date			the day of the observation (mm-dd-yyyy)
+snow precip		the amount of snowfall for 24 hour period (mm)
+snow depth		the snow depth on the ground at time of observation (mm)
+
+3) Spreadsheet: soil_temp
+
+Description: Soil temperature under three snow treatments for winters 2011-2013. Data used in Table 1 and Figures 1B and S2B. Datatable: http://lter.kbs.msu.edu/datatables/533.
+
+Variate			Description
+datetime		date and time (EST) of measurement (mm-dd-yyyy hh:mm)
+year			the year the winter ended
+treatment		snow cover, see methods for details, 3 treatments
+				"ambient-snow, no-snow, double-snow"
+replicate		the replicate plot, 4 replicates "R1-R4"
+temperature c		soil temperature at 0-5 cm depth (Celsius)
+
+
+4) Spreadsheet: n2o_n_flux
+
+Description: Daily measurements of nitrous oxide (N2O) flux from soils under three snow treatments for winters 2011-2013. Data used in Figures 1C, 2A, and S2C. Datatable: http://lter.kbs.msu.edu/datatables/531.
+
+Variate			Description
+datetime		the date and time (UTC) the measurement was taken (yyyy-mm-dd hh:mm:ss)
+datetime EST		the date and time (EST) the measurement was taken (mm-dd-yyyy hh:mm)
+year			the year the winter ended
+treatment		snow cover, see methods for details, 3 treatments
+				"ambient-snow", "no-snow", "double-snow"
+replicate		the replicate plot, 4 replicates "R1-R4"
+n2o_n flux		nitrous oxide flux (micrograms N per meter^2 per hour), 
+				measured every six hours with automated flux chamber system, see methods for details 
+
+
+5) Spreadsheet: cum_n2o_n_flux
+
+Description: Cumulative measurement of nitrous oxide (N2O) flux from soils under three snow treatments for winters 2011-2013. Date used in Figures 2B and 2C. Datatable: http://lter.kbs.msu.edu/datatables/534.
+
+Variate			Description
+year			the year the winter ended
+treatment		snow cover, see methods for details, 3 treatments
+				"ambient-snow", "no-snow", "double-snow"
+replicate		the replicate plot, 4 replicates "R1-R4"
+cum n2o_n flux		cumulative nitrous oxide flux (grams N per hectare) over the winter period, 
+				measured with automated flux chamber system, see methods for details 
+
+
+6) Spreadsheet: soil_inorganic_n
+
+Description: Soil inorganic nitrogen (ammonium plus nitrate) concentrations measured from resin strips buried (to 12 cm depth) under three snow treatments over winters 2011-2013. Data used in Figure 2C. Datatable: http://lter.kbs.msu.edu/datatables/535.
+
+Variate			Description
+year			the year the winter ended
+treatment		snow cover, see methods for details, 3 treatments
+				"ambient-snow", "no-snow", "double-snow"
+replicate		the replicate plot, 4 replicates "R1-R4"
+N			the inorganic nitrogen (ammonium plus nitrate) concentration, 
+				as measured from resin strips  (micrograms N per cm^2), see methods for details 
+
+
+7) Spreadsheet: soil_aggregates
+
+Description: Proportion of soil aggregates (0-10 cm depth) in different size fractions before and after winters 2001-2013 under three experimental snow treatments. Data used in Figures 3, S3 and S4. Datatable: http://lter.kbs.msu.edu/datatables/532. 
+
+Variate			Description
+sample date		the day the soil sample was taken (mm-dd-yyyy)
+sample type		indicates whether sample was taken before or after winter
+year			the year the winter ended
+treatment		snow cover, see methods for details, 3 treatments
+				"ambient-snow", "no-snow", "double-snow"
+replicate		the replicate plot, 4 replicates "R1-R4"
+size class		the size class of the aggregates, see methods for details, 4 classes
+				"2000 to 8000", "250 to 2000", "53 to 250", "<53" (micrometers)
+proportion		the proportion of aggregates in the size class
+
+
+
+In addition, the following datatable was used for calculation of nitrous oxide emissions during growing season and in determination of wintertime flux as proportion of annual flux in Figure 2B: N2O, CH4, CO2 Fluxes via Static Chambers (http://lter.kbs.msu.edu/datatables/28).
