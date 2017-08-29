@@ -118,7 +118,7 @@ ars<-ars%>%
 
 
 head(ars)
----- 
+#---- 
     
   
 # define peak by "two std dev above mean" for now ----
@@ -132,7 +132,7 @@ peaks<-ars%>%
   summarise(mean_flux=mean(N2O, na.rm = TRUE), std_dev_flux=sd(N2O, na.rm = TRUE))%>%
   mutate(peak_threshold = mean_flux + (2*std_dev_flux))%>%
   right_join(ars, by = "site")%>%
-  filter(N2O > peak_threshold)%>%
+  filter(N2O > peak_threshold)
 
   
 
@@ -282,7 +282,26 @@ ars_for_annual_mod<-ars%>%
 ggplot(ars_for_annual_mod, aes(x=(annual_freeze_day), y = (avg_N2O),  color=site))+
   geom_point(size=4)
 
+ggplot(ars_for_annual_mod, aes(x=(annual_fdd), y = (avg_N2O),  color=site))+
+  geom_point(size=4)
+
+ggplot(ars_for_annual_mod, aes(x=clay, y = avg_N2O,  color=site))+
+  geom_point(size=4)
+
+library(lme4)
+fit <- lmer(log(avg_N2O) ~ clay + (1|site), data = ars_for_annual_mod)
+plot(resid(fit) ~ fitted(fit))
+abline(h = 0)
+qqnorm(resid(fit))
+qqline(resid(fit))
+
+summary(fit)
+
+pairs(ars_for_annual_mod[, c(4:6, 9:11)])
+
 mod_cold<-lm(avg_N2O ~ annual_freeze_day, data=ars_for_annual_mod)
+
+summary(mod_cold)
 
 grid<-ars_for_annual_mod%>%
   data_grid(annual_freeze_day = seq_range(annual_freeze_day, 20))%>%
@@ -301,9 +320,9 @@ ggplot(ars_for_annual_mod, aes(annual_freeze_day, resid))+
   #let's add more factors
 
 mod_cold_more<-lm(avg_N2O ~ annual_freeze_day + oc + clay + ph_h2o, data=ars_for_annual_mod)
-  
+
 grid<- ars_for_annual_mod%>%
-  data_grid(clay, .model = mod_cold_more)%>%
+  data_grid(clay, oc, .model = mod_cold_more)%>%
   add_predictions(mod_cold_more)
 
 ggplot(grid, aes(annual_freeze_day, pred))+  
@@ -339,6 +358,7 @@ attach(ars_for_annual_mod)
 
 leaps<-regsubsets(avg_N2O ~ annual_freeze_day + oc + clay + ph_h2o, data=ars_for_annual_mod, nbest=10)
 
+plot(leaps)
 
 ggplot(ars_for_annual_mod, aes(x=site, y=ph_h2o))+
   geom_point()
