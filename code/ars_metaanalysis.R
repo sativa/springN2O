@@ -118,7 +118,7 @@ ars<-ars%>%
 
 
 head(ars)
-#---- 
+
     
   
 # define peak by "two std dev above mean" for now ----
@@ -207,7 +207,7 @@ ggplot(aes(N2O, fill=town, color=town))+
 
 # define time period of interest (for now (May 30)) ----
    #safe to say it doesn't freeze anywhere after 150 days
-ars_cold%>%
+ars%>%
   filter(day<150)%>%
   ggplot(aes(x=day, y=min_temp))+
   geom_point()+
@@ -216,10 +216,10 @@ ars_cold%>%
 
 # make average spring N2O for a response variable ----
   #may want to try converting average N2O into cumulative N2O like Wagner-Riddle
-ars_spring<-ars_cold%>% 
+ars_spring<-ars%>% 
   filter(day<150)%>%
   select(-exp, -series)%>%
-  group_by(site, town, year)%>%
+  group_by(site, year)%>%
   summarise(avg_N2O = (mean(N2O, na.rm = TRUE)))
 
 ggplot(ars_spring, aes(x=year,y=avg_N2O))+
@@ -229,7 +229,7 @@ ggplot(ars_spring, aes(x=year,y=avg_N2O))+
 # make annual, temperature-based variables for factors ----
    
   #need to re-partition year June-June (keep winter period together)
-ars_cold<-ars_cold%>%
+ars<-ars%>%
   mutate(spring_year = ifelse((date >"2003-06-02" & date < "2004-06-01"), 2004,
                         ifelse((date >"2004-06-02" & date < "2005-06-01"), 2005,
                                ifelse((date >"2005-06-02" & date < "2006-06-01"), 2006,
@@ -240,39 +240,40 @@ ars_cold<-ars_cold%>%
                                 ifelse((date >"2010-06-02" & date < "2011-06-01"), 2011, 0)))))))))
   
   #sum up the days each winter that air temp reached 0 or lower (freeze day)
-ars_freeze_day<-ars_cold%>%
-  filter(day<150)%>%
+ars_freeze_day<-ars%>%
+  #filter(day<150)%>%
   mutate(freeze_day = ifelse((min_temp <0), 1, 0))%>%
-  group_by(spring_year, site, town)%>%
+  group_by(spring_year, site)%>%
   distinct(date, .keep_all=TRUE)%>%
   mutate(cum_freeze_day = cumsum(freeze_day))%>%
   summarise(annual_freeze_day = max(cum_freeze_day))%>%
   rename(year = spring_year)%>%
-  right_join(ars_spring, by = c("year", "site", "town"))
+  right_join(ars_spring, by = c("year", "site"))
 
   #sum up the actual minimum temperatures to define coldest years and sites (freezing degree day(fdd))
   #fewer fdd = colder winter
-ars_fdd<-ars_cold%>%
+ars_fdd<-ars%>%
   filter(day<150)%>%
-  group_by(spring_year, site, town)%>%
+  group_by(spring_year, site)%>%
   distinct(date, .keep_all=TRUE)%>%
   mutate(cum_fdd = cumsum(min_temp))%>%
   summarise(annual_fdd = max(cum_fdd))%>%
   rename(year = spring_year)%>%
-  right_join(ars_spring, by = c("year", "site", "town"))
+  right_join(ars_spring, by = c("year", "site"))
 
   #Put freeze days and fdd together to model as function of winter coldness
 ars_for_cold_mod<-ars_freeze_day%>%
-  left_join(ars_fdd, by = c("year", "site", "town", "avg_N2O"))
+  left_join(ars_fdd, by = c("year", "site", "avg_N2O"))
   
 #Add site characteristic data back in for use in modeling ----
 ars_for_annual_mod<-ars%>%
-  select(site, sand, silt, clay, oc, ph_h2o)%>%
+  dplyr::select(site, sand, silt, clay, oc, ph_h2o)%>%
   group_by(sand)%>%
   distinct(.keep_all=TRUE)%>%
   group_by(site)%>%
   summarize_each(funs(mean(., na.rm = TRUE)))%>%
-  full_join(ars_for_cold_mod, by = "site")
+  full_join(ars_for_cold_mod, by = "site")%>%
+  filter(avg_N2O < 80, site != "ALA")
 
 
 #########Now ready to try some modeling for average annual spring emissions########## ----
@@ -285,7 +286,7 @@ ggplot(ars_for_annual_mod, aes(x=(annual_freeze_day), y = (avg_N2O),  color=site
 ggplot(ars_for_annual_mod, aes(x=(annual_fdd), y = (avg_N2O),  color=site))+
   geom_point(size=4)
 
-ggplot(ars_for_annual_mod, aes(x=clay, y = avg_N2O,  color=site))+
+ggplot(ars_for_annual_mod, aes(x=oc, y = avg_N2O,  color=site))+
   geom_point(size=4)
 
 library(lme4)
@@ -297,7 +298,7 @@ qqline(resid(fit))
 
 summary(fit)
 
-pairs(ars_for_annual_mod[, c(4:6, 9:11)])
+pairs(ars_for_annual_mod[, c(4:6, 8:10)])
 
 mod_cold<-lm(avg_N2O ~ annual_freeze_day, data=ars_for_annual_mod)
 
@@ -334,7 +335,7 @@ ggplot(grid, aes(oc, pred))+
 ggplot(grid, aes(ph_h2o, pred))+  
   geom_point()
 
-ggplot(grid, aes(clay, pred))+  #At this point, I just don't get it anymore. Everything but clay is at a fixed value? 
+ggplot(grid, aes(clay, pred))+  
   geom_point()
 
 ars_for_annual_mod<-ars_for_annual_mod%>%
@@ -351,7 +352,7 @@ step<- stepAIC(fit, direction="both")
 
 step$anova
 
-  #Try all-subsets regression  No idea here - just a copy-paste, cannot interpret results
+  #Try all-subsets regression  
 library(leaps)
 
 attach(ars_for_annual_mod)
@@ -361,12 +362,29 @@ leaps<-regsubsets(avg_N2O ~ annual_freeze_day + oc + clay + ph_h2o, data=ars_for
 plot(leaps)
 
 ggplot(ars_for_annual_mod, aes(x=site, y=ph_h2o))+
-  geom_point()
+ geom_point()
 
 
-mod_cold_more2<-lm(avg_N2O ~ annual_freeze_day + oc, data=ars_for_annual_mod)
+#mod_cold_more2<-lm(avg_N2O ~ annual_freeze_day + oc, data=ars_for_annual_mod)
 
 
+#Let's try a bunch of models ----
 
+ars_for_learning<-ars_for_annual_mod%>%
+  na.omit()%>%
+  dplyr::select(clay, oc, ph_h2o, annual_freeze_day, avg_N2O)
 
+ars_for_learning<-as.data.frame(ars_for_learning)
 
+library(caret)
+train_control<-trainControl(method="LOOCV")
+model<-train(avg_N2O ~., data=ars_for_learning, trControl=train_control, method="nb")
+
+attach(ars_for_annual_mod)
+
+fit1<- lm(avg_N2O ~ oc + ph_h2o + clay + annual_freeze_day)
+fit2<- lm(avg_N2O ~ oc + ph_h2o + clay + annual_freeze_day + oc*ph_h2o + oc*clay + oc*ph_h2o*clay + oc*ph_h2o*clay*annual_freeze_day)
+fit3<- lm(avg_N2O ~ log(oc) + ph_h2o + log(clay) + annual_freeze_day + log(oc)*ph_h2o + log(oc)*log(clay) + log(oc)*ph_h2o*log(clay) + log(oc)*ph_h2o*log(clay)*annual_freeze_day)
+fit4<- lm(avg_N2O ~ annual_freeze_day + ph_h2o)
+
+#Since I added the warmer sites, the problem is that with more warmth, we also expect more N2O
