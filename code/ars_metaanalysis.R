@@ -208,7 +208,7 @@ ggplot(aes(N2O, fill=town, color=town))+
 # define time period of interest (for now (May 30)) ----
    #safe to say it doesn't freeze anywhere after 150 days
 ars%>%
-  filter(day<150)%>%
+  #filter(day<150)%>%
   ggplot(aes(x=day, y=min_temp))+
   geom_point()+
   geom_hline(yintercept=0)+
@@ -230,16 +230,23 @@ ggplot(ars_spring, aes(x=year,y=avg_N2O))+
    
   #need to re-partition year June-June (keep winter period together)
 ars<-ars%>%
-  mutate(spring_year = ifelse((date >"2003-06-02" & date < "2004-06-01"), 2004,
-                        ifelse((date >"2004-06-02" & date < "2005-06-01"), 2005,
-                               ifelse((date >"2005-06-02" & date < "2006-06-01"), 2006,
-                                      ifelse((date >"2006-06-02" & date < "2007-06-01"), 2007,
-                        ifelse((date >"2007-06-02" & date < "2008-06-01"), 2008,
-                          ifelse((date >"2008-06-02" & date < "2009-06-01"), 2009,
-                             ifelse((date >"2009-06-02" & date < "2010-06-01"), 2010,
-                                ifelse((date >"2010-06-02" & date < "2011-06-01"), 2011, 0)))))))))
+  mutate(spring_year = ifelse((date >"2003-06-02" & date < "2004-06-02"), 2004,
+                        ifelse((date >"2004-06-02" & date < "2005-06-02"), 2005,
+                               ifelse((date >"2005-06-02" & date < "2006-06-02"), 2006,
+                                      ifelse((date >"2006-06-02" & date < "2007-06-02"), 2007,
+                        ifelse((date >"2007-06-02" & date < "2008-06-02"), 2008,
+                          ifelse((date >"2008-06-02" & date < "2009-06-02"), 2009,
+                             ifelse((date >"2009-06-02" & date < "2010-06-02"), 2010,
+                                ifelse((date >"2010-06-02" & date < "2011-06-02"), 2011, 0)))))))))
+
+day<-c(155:365, 1:154)
+new_days<-1:365
+
+new_year<-data.frame(day, new_days)
+
+ars<-left_join(ars, new_year, by = "day")
   
-  #sum up the days each winter that air temp reached 0 or lower (freeze day)
+#sum up the days each winter that air temp reached 0 or lower (freeze day)
 ars_freeze_day<-ars%>%
   #filter(day<150)%>%
   mutate(freeze_day = ifelse((min_temp <0), 1, 0))%>%
@@ -253,13 +260,19 @@ ars_freeze_day<-ars%>%
   #sum up the actual minimum temperatures to define coldest years and sites (freezing degree day(fdd))
   #fewer fdd = colder winter
 ars_fdd<-ars%>%
-  filter(day<150)%>%
+  #filter(day<150)%>%
   group_by(spring_year, site)%>%
   distinct(date, .keep_all=TRUE)%>%
   mutate(cum_fdd = cumsum(min_temp))%>%
-  summarise(annual_fdd = max(cum_fdd))%>%
+  mutate(cum_wdd = cumsum(max_temp))%>%
+  summarise(annual_fdd = max(cum_fdd), annual_wdd = max(cum_wdd))%>%
   rename(year = spring_year)%>%
   right_join(ars_spring, by = c("year", "site"))
+
+ggplot(ars_fdd, aes(x=year, y=annual_fdd, color="avg_N2O"))+
+  geom_point()+
+  geom_point(aes(x=year, y=annual_wdd), color="blue")+
+  facet_wrap(~site)
 
   #Put freeze days and fdd together to model as function of winter coldness
 ars_for_cold_mod<-ars_freeze_day%>%
@@ -267,7 +280,7 @@ ars_for_cold_mod<-ars_freeze_day%>%
   
 #Add site characteristic data back in for use in modeling ----
 ars_for_annual_mod<-ars%>%
-  dplyr::select(site, sand, silt, clay, oc, ph_h2o)%>%
+  select(site, sand, silt, clay, oc, ph_h2o)%>%
   group_by(sand)%>%
   distinct(.keep_all=TRUE)%>%
   group_by(site)%>%
@@ -286,7 +299,7 @@ ggplot(ars_for_annual_mod, aes(x=(annual_freeze_day), y = (avg_N2O),  color=site
 ggplot(ars_for_annual_mod, aes(x=(annual_fdd), y = (avg_N2O),  color=site))+
   geom_point(size=4)
 
-ggplot(ars_for_annual_mod, aes(x=oc, y = avg_N2O,  color=site))+
+ggplot(ars_for_annual_mod, aes(x=ph_h2o, y = avg_N2O,  color=site))+
   geom_point(size=4)
 
 library(lme4)
