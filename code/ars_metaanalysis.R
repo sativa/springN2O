@@ -260,7 +260,7 @@ ars_freeze_day<-ars%>%
   #sum up the actual minimum temperatures to define coldest years and sites (freezing degree day(fdd))
   #fewer fdd = colder winter
 ars_fdd<-ars%>%
-  #filter(day<150)%>%
+  filter(new_days>120)%>%
   group_by(spring_year, site)%>%
   distinct(date, .keep_all=TRUE)%>%
   mutate(cum_fdd = cumsum(min_temp))%>%
@@ -289,15 +289,28 @@ ars_for_annual_mod<-ars%>%
   filter(avg_N2O < 80, site != "ALA")
 
 
+############I need a better indicator of how cold the winter was!!!
+for_fun<-ars_for_annual_mod%>%
+  mutate(coldpower = -(annual_freeze_day/annual_fdd))
+
+ggplot(for_fun, aes(x=year, y = coldpower))+
+  geom_point()+
+  facet_wrap(~site)
+
+ggplot(for_fun, aes(x=(coldpower), y = (avg_N2O),  color=site))+
+  geom_point(size=4)
+
 #########Now ready to try some modeling for average annual spring emissions########## ----
   #ars_for_annual_mod is the dataframe resulting from all the above chunks
 
  #freeze days is more linear than freezing degree days (fdd)
 ggplot(ars_for_annual_mod, aes(x=(annual_freeze_day), y = (avg_N2O),  color=site))+
-  geom_point(size=4)
+  geom_point(size=4)+
+  facet_wrap(~site)
 
-ggplot(ars_for_annual_mod, aes(x=(annual_fdd), y = (avg_N2O),  color=site))+
-  geom_point(size=4)
+ggplot(ars_for_annual_mod, aes(x=(annual_wdd), y = (avg_N2O),  color=site))+
+  geom_point(size=4)+
+  facet_wrap(~site)
 
 ggplot(ars_for_annual_mod, aes(x=ph_h2o, y = avg_N2O,  color=site))+
   geom_point(size=4)
