@@ -260,7 +260,7 @@ ars_freeze_day<-ars%>%
   #sum up the actual minimum temperatures to define coldest years and sites (freezing degree day(fdd))
   #fewer fdd = colder winter
 ars_fdd<-ars%>%
-  filter(new_days>120)%>%
+  filter(new_days>120 & new_days < 285)%>%
   group_by(spring_year, site)%>%
   distinct(date, .keep_all=TRUE)%>%
   mutate(cum_fdd = cumsum(min_temp))%>%
@@ -280,7 +280,7 @@ ars_for_cold_mod<-ars_freeze_day%>%
   
 #Add site characteristic data back in for use in modeling ----
 ars_for_annual_mod<-ars%>%
-  select(site, sand, silt, clay, oc, ph_h2o)%>%
+  select(site, sand, silt, clay, oc, ph_h2o, lat)%>%
   group_by(sand)%>%
   distinct(.keep_all=TRUE)%>%
   group_by(site)%>%
@@ -299,6 +299,9 @@ ggplot(for_fun, aes(x=year, y = coldpower))+
 
 ggplot(for_fun, aes(x=(coldpower), y = (avg_N2O),  color=site))+
   geom_point(size=4)
+
+ggplot(ars_for_annual_mod, aes(x=annual_fdd, y=avg_N2O, color = site))+
+  geom_point()
 
 #########Now ready to try some modeling for average annual spring emissions########## ----
   #ars_for_annual_mod is the dataframe resulting from all the above chunks
