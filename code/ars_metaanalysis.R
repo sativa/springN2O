@@ -120,42 +120,6 @@ ars<-ars%>%
 head(ars)
 
     
-  
-# define peak by "two std dev above mean" for now ----
-peaks<-ars%>%
-  filter(N2O > 0)%>%
-  select(-exp, -series)%>%
-  group_by(site, date, year, month, day)%>%
-  summarise_each(funs(mean(., na.rm = TRUE)))
-  
-  group_by(site)%>%
-  summarise(mean_flux=mean(N2O, na.rm = TRUE), std_dev_flux=sd(N2O, na.rm = TRUE))%>%
-  mutate(peak_threshold = mean_flux + (2*std_dev_flux))%>%
-  right_join(ars, by = "site")%>%
-  filter(N2O > peak_threshold)
-
-  
-
-ggplot(filter(peaks, site == "MNM"), aes(x=day, y=N2O, color=as.factor(year)))+
-  geom_point()+
-  geom_smooth()+
-  facet_wrap(~ year)
-
-
-# split sites by when peaks occur, kind of dumb ----
-
-mutate(depth = ifelse((depth == 2.5), 0,
-                      ifelse((depth == 10.0), 10,
-                             ifelse((depth == 22.5), 20,
-                                    ifelse((depth == 45.0), 45,
-                                           ifelse((depth == 80.0), 80, 105))))))
-
-peaks%>%
-  mutate(season = ifelse((month %in% c(1,2,3,4,10,11,12)), "cold", "warm"))%>%
-ggplot(aes(x=site, y=N2O))+
-  geom_boxplot()+
-  facet_wrap(~season)  
-
 # how R fits a model of N2O over time by site ----  
 ars%>%
   select(-exp, -series)%>%
@@ -300,7 +264,7 @@ ggplot(for_fun, aes(x=year, y = coldpower))+
 ggplot(for_fun, aes(x=(coldpower), y = (avg_N2O),  color=site))+
   geom_point(size=4)
 
-ggplot(ars_for_annual_mod, aes(x=annual_fdd, y=avg_N2O, color = site))+
+ggplot(peak_for_annual_mod, aes(x=annual_freeze_day, y=(avg_N2O), color = site))+
   geom_point()
 
 #########Now ready to try some modeling for average annual spring emissions########## ----
@@ -327,7 +291,7 @@ qqline(resid(fit))
 
 summary(fit)
 
-pairs(ars_for_annual_mod[, c(4:6, 8:10)])
+pairs(ars_for_annual_mod[, c(4:6, 8:11)])
 
 mod_cold<-lm(avg_N2O ~ annual_freeze_day, data=ars_for_annual_mod)
 
@@ -417,3 +381,4 @@ fit3<- lm(avg_N2O ~ log(oc) + ph_h2o + log(clay) + annual_freeze_day + log(oc)*p
 fit4<- lm(avg_N2O ~ annual_freeze_day + ph_h2o)
 
 #Since I added the warmer sites, the problem is that with more warmth, we also expect more N2O
+
