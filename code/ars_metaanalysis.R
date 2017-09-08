@@ -223,7 +223,7 @@ ggplot(ars_for_annual_mod, aes(x=(annual_freeze_day), y = (avg_N2O),  color=site
   geom_point(size=4)+
   facet_wrap(~site)
 
-ggplot(ars_for_annual_mod, aes(x=(annual_wdd), y = (avg_N2O),  color=site))+
+ggplot(ars_for_annual_mod, aes(x=(annual_fdd), y = (avg_N2O),  color=site))+
   geom_point(size=4)+
   facet_wrap(~site)
 
