@@ -100,18 +100,6 @@ ars<-ars%>%
 head(ars)
 
     
-# how R fits a model of N2O over time by site ----  
-ars%>%
-  select(-exp, -series)%>%
-  #group_by(site, date, year, month, day)%>%
-  #summarise_each(funs(mean(., na.rm = TRUE)))%>%
-  filter(site == "MNM" & year %in% 2004:2008)%>%
-  ggplot(aes(x = day, y=N2O))+
-  geom_point()+
-  geom_smooth()+
-  geom_vline(xintercept=100)+
-  facet_grid(year~site)
-
 # looking only at sites that freeze ----
 ars_cold<-ars %>% filter(site %in% c("INA", "INT", "INW", "MNM", "MNR", "NDM", "NEM", "NVN", "PAH"))%>%
   mutate(town = ifelse((site %in% c("INA", "INT", "INW")), "West_Lafayette",
@@ -121,19 +109,8 @@ ars_cold<-ars %>% filter(site %in% c("INA", "INT", "INW", "MNM", "MNR", "NDM", "
                                             ifelse((site == "PAH"), "University_Park", "NA" ))))))
 ars_cold%>%
   select(-exp, -series)%>%
-  group_by(site, town, date, year, month, day)%>%
-  summarise_each(funs(mean(., na.rm = TRUE)))%>%
-  filter(year %in% 2004:2011)%>%
-  ggplot(aes(x = day, y=N2O))+
-  geom_point()+
-  geom_smooth()+
-  geom_vline(xintercept=100)+
-  facet_grid(year~site)
-
-ars_cold%>%
-  select(-exp, -series)%>%
-  group_by(site, town, date, year, month, day)%>%
-  summarise_each(funs(mean(., na.rm = TRUE)))%>%
+  #group_by(site, town, date, year, month, day)%>%
+  #summarise_each(funs(mean(., na.rm = TRUE)))%>%
   filter(year %in% 2004:2011)%>%
   ggplot((aes(x = town, y = N2O)))+
   geom_jitter(alpha = .3) 
@@ -142,6 +119,7 @@ ars_cold%>%
   select(-exp, -series)%>%
   group_by(site, town, date, year, month, day)%>%
   summarise_each(funs(mean(., na.rm = TRUE)))%>%
+  filter(year %in% 2004:2011)%>%
 ggplot(aes(N2O, fill=town, color=town))+
   geom_density(alpha =.1)+
   xlim(-15, 35)+
@@ -149,18 +127,9 @@ ggplot(aes(N2O, fill=town, color=town))+
 
   
 
-# define time period of interest (for now (May 30)) ----
-   #safe to say it doesn't freeze anywhere after 150 days
-ars%>%
-  #filter(day<150)%>%
-  ggplot(aes(x=day, y=min_temp))+
-  geom_point()+
-  geom_hline(yintercept=0)+
-  facet_grid(site~year)
-
 # make average spring N2O for a response variable ----
   #may want to try converting average N2O into cumulative N2O like Wagner-Riddle
-ars_spring<-ars%>% 
+ars_spring<-ars_cold%>% 
   filter(day<150)%>%
   select(-exp, -series)%>%
   group_by(site, year)%>%
@@ -173,7 +142,7 @@ ggplot(ars_spring, aes(x=year,y=avg_N2O))+
 # make annual, temperature-based variables for factors ----
    
   #need to re-partition year June-June (keep winter period together)
-ars<-ars%>%
+ars_cold<-ars_cold%>%
   mutate(spring_year = ifelse((date >"2003-06-02" & date < "2004-06-02"), 2004,
                         ifelse((date >"2004-06-02" & date < "2005-06-02"), 2005,
                                ifelse((date >"2005-06-02" & date < "2006-06-02"), 2006,
@@ -188,11 +157,10 @@ new_days<-1:365
 
 new_year<-data.frame(day, new_days)
 
-ars<-left_join(ars, new_year, by = "day")
+ars_cold<-left_join(ars_cold, new_year, by = "day")
   
 #sum up the days each winter that air temp reached 0 or lower (freeze day)
-ars_freeze_day<-ars%>%
-  #filter(day<150)%>%
+ars_freeze_day<-ars_cold%>%
   mutate(freeze_day = ifelse((min_temp <0), 1, 0))%>%
   group_by(spring_year, site)%>%
   distinct(date, .keep_all=TRUE)%>%
@@ -203,13 +171,13 @@ ars_freeze_day<-ars%>%
 
   #sum up the actual minimum temperatures to define coldest years and sites (freezing degree day(fdd))
   #fewer fdd = colder winter
-ars_fdd<-ars%>%
+ars_fdd<-ars_cold%>%
   filter(new_days>120 & new_days < 285)%>%
   group_by(spring_year, site)%>%
   distinct(date, .keep_all=TRUE)%>%
   mutate(cum_fdd = cumsum(min_temp))%>%
-  mutate(cum_wdd = cumsum(max_temp))%>%
-  summarise(annual_fdd = max(cum_fdd), annual_wdd = max(cum_wdd))%>%
+  #mutate(cum_wdd = cumsum(max_temp))%>%
+  summarise(annual_fdd = max(cum_fdd))%>%
   rename(year = spring_year)%>%
   right_join(ars_spring, by = c("year", "site"))
 
@@ -223,7 +191,7 @@ ars_for_cold_mod<-ars_freeze_day%>%
   left_join(ars_fdd, by = c("year", "site", "avg_N2O"))
   
 #Add site characteristic data back in for use in modeling ----
-ars_for_annual_mod<-ars%>%
+ars_for_annual_mod<-ars_cold%>%
   select(site, sand, silt, clay, oc, ph_h2o, lat)%>%
   group_by(sand)%>%
   distinct(.keep_all=TRUE)%>%
@@ -244,7 +212,7 @@ ggplot(for_fun, aes(x=year, y = coldpower))+
 ggplot(for_fun, aes(x=(coldpower), y = (avg_N2O),  color=site))+
   geom_point(size=4)
 
-ggplot(peak_for_annual_mod, aes(x=annual_freeze_day, y=(avg_N2O), color = site))+
+ggplot(ars_for_annual_mod, aes(x=annual_freeze_day, y=(avg_N2O), color = site))+
   geom_point()
 
 #########Now ready to try some modeling for average annual spring emissions########## ----
