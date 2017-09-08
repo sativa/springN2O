@@ -58,26 +58,6 @@ soils<-ars_soilseries%>%
 
 head(soils)
 
-# read and select daymet ars data ----
-daymet_mandan<-read_csv("../data/ars/daymet_mandan.csv", skip = 7)
-daymet_mandan$town<-"Mandan"
-daymet_morris<-read_csv("../data/ars/daymet_morris.csv", skip = 7)
-daymet_morris$town<-"Morris"
-daymet_roseville<-read_csv("../data/ars/daymet_roseville.csv", skip = 7)
-daymet_roseville$town<-"Roseville"
-daymet_university_park<-read_csv("../data/ars/daymet_university_park.csv", skip = 7)
-daymet_university_park$town<-"University_Park"
-daymet_west_lafayette<-read_csv("../data/ars/daymet_west_lafayette.csv", skip = 7)
-daymet_west_lafayette$town<-"West_Lafayette"
-
-daymet<-rbind(daymet_mandan, daymet_morris, daymet_roseville, daymet_university_park, daymet_west_lafayette)
-
-daymet$date<-as.Date(strptime(paste(daymet$year, daymet$yday), format="%Y%j"))
-colnames(daymet)<-c("year", "yday", "daymet_prcp", "daymet_radn", "daymet_tmax", "daymet_tmin", "town", "date")
-
-head(daymet)
-   
-
 # get and add soil data ----  
 
 our_soils<-soils%>%
