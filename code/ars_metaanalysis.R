@@ -140,6 +140,8 @@ ggplot(ars_spring, aes(x=year,y=avg_N2O))+
   facet_wrap(~site)
 
 # make annual, temperature-based variables for factors ----
+
+  #what about a summer-temp and a winter-temp if I put the other sites back in?
    
   #need to re-partition year June-June (keep winter period together)
 ars_cold<-ars_cold%>%
@@ -289,7 +291,7 @@ ggplot(ars_for_annual_mod, aes(clay, resid))+
 library(MASS)
 
 fit<-lm(avg_N2O ~ annual_freeze_day + oc + clay + ph_h2o, data=ars_for_annual_mod)
-step<- stepAIC(fit, direction="both")
+step<- stepAIC(fit, direction="backward")
 
 step$anova
 
