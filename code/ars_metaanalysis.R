@@ -178,14 +178,19 @@ ars_fdd<-ars_cold%>%
   group_by(spring_year, site)%>%
   distinct(date, .keep_all=TRUE)%>%
   mutate(cum_fdd = cumsum(min_temp))%>%
-  #mutate(cum_wdd = cumsum(max_temp))%>%
-  summarise(annual_fdd = max(cum_fdd))%>%
+  mutate(cum_wdd = cumsum(max_temp))%>%
+  mutate(cum_gdd = cumsum(((max_temp + min_temp)/2)))%>%
+  summarise(annual_fdd = min(cum_fdd), annual_wdd = max(cum_fdd), annual_gdd = max(cum_gdd))%>%
   rename(year = spring_year)%>%
   right_join(ars_spring, by = c("year", "site"))
 
-ggplot(ars_fdd, aes(x=year, y=annual_fdd, color="avg_N2O"))+
+ggplot(ars_fdd, aes(x=date, y=cum_fdd))+
   geom_point()+
-  geom_point(aes(x=year, y=annual_wdd), color="blue")+
+  facet_wrap(~site)
+
+ggplot(ars_fdd, aes(x=year, y=annual_fdd))+
+  geom_point(color="blue")+
+  geom_point(aes(x=year, y=annual_wdd), color="red")+
   facet_wrap(~site)
 
   #Put freeze days and fdd together to model as function of winter coldness
@@ -203,20 +208,6 @@ ars_for_annual_mod<-ars_cold%>%
   filter(avg_N2O < 80, site != "ALA")
 
 
-############I need a better indicator of how cold the winter was!!!
-for_fun<-ars_for_annual_mod%>%
-  mutate(coldpower = -(annual_freeze_day/annual_fdd))
-
-ggplot(for_fun, aes(x=year, y = coldpower))+
-  geom_point()+
-  facet_wrap(~site)
-
-ggplot(for_fun, aes(x=(coldpower), y = (avg_N2O),  color=site))+
-  geom_point(size=4)
-
-ggplot(ars_for_annual_mod, aes(x=annual_freeze_day, y=(avg_N2O), color = site))+
-  geom_point()
-
 #########Now ready to try some modeling for average annual spring emissions########## ----
   #ars_for_annual_mod is the dataframe resulting from all the above chunks
 
@@ -225,9 +216,8 @@ ggplot(ars_for_annual_mod, aes(x=(annual_freeze_day), y = (avg_N2O),  color=site
   geom_point(size=4)+
   facet_wrap(~site)
 
-ggplot(ars_for_annual_mod, aes(x=(annual_fdd), y = (avg_N2O),  color=site))+
-  geom_point(size=4)+
-  facet_wrap(~site)
+ggplot(ars_for_annual_mod, aes(x=(annual_gdd), y = (avg_N2O),  color=site))+
+  geom_point(size=4)
 
 ggplot(ars_for_annual_mod, aes(x=ph_h2o, y = avg_N2O,  color=site))+
   geom_point(size=4)
