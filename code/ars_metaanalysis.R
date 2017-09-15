@@ -173,10 +173,16 @@ ars_freeze_day<-ars_cold%>%
 
   #sum up the actual minimum temperatures to define coldest years and sites (freezing degree day(fdd))
   #fewer fdd = colder winter
+ars_cold_sum<-ars_cold%>%
+  filter(min_temp < 0)%>%
+  group_by(spring_year, site)%>%
+  summarise(cold_sum = sum(min_temp))
+
 ars_fdd<-ars_cold%>%
   filter(new_days>120 & new_days < 285)%>%
   group_by(spring_year, site)%>%
   distinct(date, .keep_all=TRUE)%>%
+  mutate(cold = sum(negative))%>%
   mutate(cum_fdd = cumsum(min_temp))%>%
   mutate(cum_wdd = cumsum(max_temp))%>%
   mutate(cum_gdd = cumsum(((max_temp + min_temp)/2)))%>%
@@ -321,4 +327,5 @@ fit3<- lm(avg_N2O ~ log(oc) + ph_h2o + log(clay) + annual_freeze_day + log(oc)*p
 fit4<- lm(avg_N2O ~ annual_freeze_day + ph_h2o)
 
 #Since I added the warmer sites, the problem is that with more warmth, we also expect more N2O
+
 
