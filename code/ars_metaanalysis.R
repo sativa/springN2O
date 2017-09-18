@@ -43,6 +43,25 @@ latlong<-ars_latlong%>%
 
 head(latlong)
 
+# read and select daymet ars data ----		
+daymet_mandan<-read_csv("../data/ars/daymet_mandan.csv", skip = 7)		
+daymet_mandan$town<-"Mandan"		
+daymet_morris<-read_csv("../data/ars/daymet_morris.csv", skip = 7)		
+daymet_morris$town<-"Morris"		
+daymet_roseville<-read_csv("../data/ars/daymet_roseville.csv", skip = 7)		
+daymet_roseville$town<-"Roseville"		
+daymet_university_park<-read_csv("../data/ars/daymet_university_park.csv", skip = 7)		
+daymet_university_park$town<-"University_Park"		
+daymet_west_lafayette<-read_csv("../data/ars/daymet_west_lafayette.csv", skip = 7)		
+daymet_west_lafayette$town<-"West_Lafayette"		
+		
+daymet<-rbind(daymet_mandan, daymet_morris, daymet_roseville, daymet_university_park, daymet_west_lafayette)		
+		
+daymet$date<-as.Date(strptime(paste(daymet$year, daymet$yday), format="%Y%j"))		
+colnames(daymet)<-c("year", "yday", "daymet_prcp", "daymet_radn", "daymet_tmax", "daymet_tmin", "town", "date")		
+		
+head(daymet)
+
 # read and select soils series for experiments ----
 ars_soilseries<-read_csv("../data/ars/ars_soilseries.csv")
 
@@ -106,7 +125,11 @@ ars_cold<-ars %>% filter(site %in% c("INA", "INT", "INW", "MNM", "MNR", "NDM", "
                        ifelse((site == "MNM"), "Morris",
                               ifelse((site == "MNR"), "Roseville",
                                      ifelse((site %in% c("NDM", "NEM", "NVN")), "Mandan",
-                                            ifelse((site == "PAH"), "University_Park", "NA" ))))))
+                                            ifelse((site == "PAH"), "University_Park", "NA" ))))), date = as.Date(date))
+
+ars_cold<-ars_cold%>%
+  right_join(daymet, by = c("town", "date", "year"))
+
 ars_cold%>%
   select(-exp, -series)%>%
   #group_by(site, town, date, year, month, day)%>%
@@ -163,7 +186,7 @@ ars_cold<-left_join(ars_cold, new_year, by = "day")
   
 #sum up the days each winter that air temp reached 0 or lower (freeze day)
 ars_freeze_day<-ars_cold%>%
-  mutate(freeze_day = ifelse((min_temp <0), 1, 0))%>%
+  mutate(freeze_day = ifelse((daymet_tmin <0), 1, 0))%>%
   group_by(spring_year, site)%>%
   distinct(date, .keep_all=TRUE)%>%
   mutate(cum_freeze_day = cumsum(freeze_day))%>%
@@ -174,12 +197,19 @@ ars_freeze_day<-ars_cold%>%
   #sum up the actual minimum temperatures to define coldest years and sites (freezing degree day(fdd))
   #fewer fdd = colder winter
 ars_cold_sum<-ars_cold%>%
-  filter(min_temp < 0)%>%
+  #filter(daymet_tmin < 0)%>%
   distinct(date, .keep_all=TRUE)%>%
   group_by(spring_year, site)%>%
-  summarise(cold_sum = sum(min_temp))%>%
+  summarise(cold_sum = sum(daymet_tmin))%>%
   filter(spring_year != 0)%>%
   rename(year = spring_year)
+
+#I don't know what's going on up there#############
+#######################################################################################################
+
+ggplot(ars_cold_sum, aes(x=date, y = daymet_tmin))+
+  geom_point()+
+  facet_wrap(~site)
 
 ars_fdd<-ars_cold%>%
   filter(new_days>120 & new_days < 285)%>%
