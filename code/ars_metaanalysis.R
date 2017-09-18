@@ -175,20 +175,23 @@ ars_freeze_day<-ars_cold%>%
   #fewer fdd = colder winter
 ars_cold_sum<-ars_cold%>%
   filter(min_temp < 0)%>%
+  distinct(date, .keep_all=TRUE)%>%
   group_by(spring_year, site)%>%
-  summarise(cold_sum = sum(min_temp))
+  summarise(cold_sum = sum(min_temp))%>%
+  filter(spring_year != 0)%>%
+  rename(year = spring_year)
 
 ars_fdd<-ars_cold%>%
   filter(new_days>120 & new_days < 285)%>%
   group_by(spring_year, site)%>%
   distinct(date, .keep_all=TRUE)%>%
-  mutate(cold = sum(negative))%>%
   mutate(cum_fdd = cumsum(min_temp))%>%
   mutate(cum_wdd = cumsum(max_temp))%>%
   mutate(cum_gdd = cumsum(((max_temp + min_temp)/2)))%>%
   summarise(annual_fdd = min(cum_fdd), annual_wdd = max(cum_fdd), annual_gdd = max(cum_gdd))%>%
   rename(year = spring_year)%>%
-  right_join(ars_spring, by = c("year", "site"))
+  right_join(ars_spring, by = c("year", "site"))%>%
+  left_join(ars_cold_sum, by = c("year", "site"))
 
 ggplot(ars_fdd, aes(x=date, y=cum_fdd))+
   geom_point()+
@@ -222,7 +225,7 @@ ggplot(ars_for_annual_mod, aes(x=(annual_freeze_day), y = (avg_N2O),  color=site
   geom_point(size=4)+
   facet_wrap(~site)
 
-ggplot(ars_for_annual_mod, aes(x=(annual_gdd), y = (avg_N2O),  color=site))+
+ggplot(ars_for_annual_mod, aes(x=(cold_sum), y = (avg_N2O),  color=site))+
   geom_point(size=4)
 
 ggplot(ars_for_annual_mod, aes(x=ph_h2o, y = avg_N2O,  color=site))+
