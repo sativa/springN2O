@@ -62,6 +62,22 @@ colnames(daymet)<-c("year", "yday", "daymet_prcp", "daymet_radn", "daymet_tmax",
 		
 head(daymet)
 
+coldness<-daymet%>%
+  mutate(spring_year = ifelse((date >"2003-06-02" & date < "2004-06-02"), 2004,
+                              ifelse((date >"2004-06-02" & date < "2005-06-02"), 2005,
+                                     ifelse((date >"2005-06-02" & date < "2006-06-02"), 2006,
+                                            ifelse((date >"2006-06-02" & date < "2007-06-02"), 2007,
+                                                   ifelse((date >"2007-06-02" & date < "2008-06-02"), 2008,
+                                                          ifelse((date >"2008-06-02" & date < "2009-06-02"), 2009,
+                                                                 ifelse((date >"2009-06-02" & date < "2010-06-02"), 2010,
+                                                                        ifelse((date >"2010-06-02" & date < "2011-06-02"), 2011, 0)))))))))%>%
+  filter(daymet_tmin < 0)%>%
+  group_by(town, spring_year)%>%
+  summarise(cold_sum = sum(daymet_tmin))%>%
+  filter(spring_year != 0)%>%
+  rename(year = spring_year)
+  
+
 # read and select soils series for experiments ----
 ars_soilseries<-read_csv("../data/ars/ars_soilseries.csv")
 
@@ -127,8 +143,6 @@ ars_cold<-ars %>% filter(site %in% c("INA", "INT", "INW", "MNM", "MNR", "NDM", "
                                      ifelse((site %in% c("NDM", "NEM", "NVN")), "Mandan",
                                             ifelse((site == "PAH"), "University_Park", "NA" ))))), date = as.Date(date))
 
-ars_cold<-ars_cold%>%
-  right_join(daymet, by = c("town", "date", "year"))
 
 ars_cold%>%
   select(-exp, -series)%>%
@@ -155,12 +169,22 @@ ggplot(aes(N2O, fill=town, color=town))+
 ars_spring<-ars_cold%>% 
   filter(day<150)%>%
   select(-exp, -series)%>%
-  group_by(site, year)%>%
+  group_by(site,town, year)%>%
   summarise(avg_N2O = (mean(N2O, na.rm = TRUE)))
 
 ggplot(ars_spring, aes(x=year,y=avg_N2O))+
   geom_point()+
   facet_wrap(~site)
+
+daymet_cold<-left_join(coldness, ars_spring)
+
+ggplot(daymet_cold, aes(x=cold_sum, y=avg_N2O))+
+  geom_point()+
+  facet_wrap(~town)+
+  geom_smooth(method='lm')
+
+ggplot(daymet_cold, aes(x=year, y=cold_sum, color= town))+
+  geom_point()
 
 # make annual, temperature-based variables for factors ----
 
@@ -203,9 +227,6 @@ ars_cold_sum<-ars_cold%>%
   summarise(cold_sum = sum(daymet_tmin))%>%
   filter(spring_year != 0)%>%
   rename(year = spring_year)
-
-#I don't know what's going on up there#############
-#######################################################################################################
 
 ggplot(ars_cold_sum, aes(x=date, y = daymet_tmin))+
   geom_point()+

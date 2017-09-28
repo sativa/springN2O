@@ -1,0 +1,298 @@
+---
+title: "ars_cold_model"
+author: "Ranae Dietzel"
+date: "September 19, 2017"
+output: pdf_document
+---  
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+```
+
+```{r packages, include=FALSE}
+library(tidyverse)
+library(lubridate)
+library(modelr)
+library(stringr)
+library(aqp)
+library(soilDB)
+library(ggmap)
+library(maps)
+library(mapdata)
+library(devtools)
+library(readr)
+```  
+
+```{r map of data, echo=FALSE, warning=FALSE, message=FALSE}  
+ars <- read_csv("../data/ars/ars_latlong.csv")%>%
+  select(`Experimental Unit`, `Latitude of weather station, decimal degrees`, 
+         `Longitude of weather station, decimal degrees`)%>%
+  rename(name = `Experimental Unit`, lon = `Longitude of weather station, decimal degrees`, lat = `Latitude of weather station, decimal degrees`)
+
+ars_box <- make_bbox(lon = ars$lon, lat = ars$lat, f = .1)
+
+sq_map <- get_map(location = ars_box, maptype = "toner", source = "stamen")
+
+ggmap(sq_map) + 
+  geom_point(data = ars, mapping = aes(x = lon, y = lat), color = "red", size = 3.5)+
+geom_point(data = ars, mapping = aes(x = lon, y = lat), color = "black", size = 3.0)  
+```
+1. Read and select ARS flux data  
+
+```{r Read and select ARS flux data}
+ars_fluxes<-read_csv("../data/ars/ars_fluxes.csv", skip = 2)
+
+fluxes<-ars_fluxes%>%
+  select(`Experimental Unit ID`, Date, N2O, Air_Temp, Soil_Temp, Soil_Moisture)%>%
+  mutate(Date = mdy_hms(Date))%>%
+  separate(`Experimental Unit ID`, c("state","exp"), sep = 3)
+```  
+
+2. Read and select ARS weather data  
+
+```{r, read and select ars weather data}
+ars_weather<-read_csv("../data/ars/ars_weather.csv", skip = 2)
+
+weather<-ars_weather%>%
+  select(`Site ID`, Date, `Temperate, air, daily, maximum, degrees Celsius`, `Temperate, air, daily, minimum, degrees Celsius`, Precip, `Total_Net_Radn`)%>%
+  mutate(Date = mdy_hms(Date))%>%
+  separate(`Site ID`, c("state","exp"), sep = 3)%>%
+  filter(state != "ORP")%>%
+  select(-exp)%>%
+  mutate(Total_Net_Radn = as.numeric(Total_Net_Radn))
+```  
+
+3. Read and select ARS longitude and latitude  
+
+```{r, read and select ars weather station data for longitude and latitude}
+ars_latlong<-read_csv("../data/ars/ars_latlong.csv")
+
+latlong<-ars_latlong%>%
+  select(`Experimental Unit`, `Latitude of weather station, decimal degrees`, `Longitude of weather station, decimal degrees`)%>%
+  rename(lat = `Latitude of weather station, decimal degrees`, long = `Longitude of weather station, decimal degrees`)%>%
+  separate(`Experimental Unit`, c("state","exp"), sep = 3)%>%
+  filter(state != "ORP")
+```  
+
+4. Read and select DAYMET data for all the cold sites (Mandan, Morris, Roseville, University Park, West Lafayette)
+
+```{r, read and select daymet ars data}		
+daymet_mandan<-read_csv("../data/ars/daymet_mandan.csv", skip = 7)		
+daymet_mandan$town<-"Mandan"		
+daymet_morris<-read_csv("../data/ars/daymet_morris.csv", skip = 7)		
+daymet_morris$town<-"Morris"		
+daymet_roseville<-read_csv("../data/ars/daymet_roseville.csv", skip = 7)		
+daymet_roseville$town<-"Roseville"		
+daymet_university_park<-read_csv("../data/ars/daymet_university_park.csv", skip = 7)		
+daymet_university_park$town<-"University_Park"		
+daymet_west_lafayette<-read_csv("../data/ars/daymet_west_lafayette.csv", skip = 7)		
+daymet_west_lafayette$town<-"West_Lafayette"		
+		
+daymet<-rbind(daymet_mandan, daymet_morris, daymet_roseville, daymet_university_park, daymet_west_lafayette)		
+		
+daymet$date<-as.Date(strptime(paste(daymet$year, daymet$yday), format="%Y%j"))		
+colnames(daymet)<-c("year", "yday", "daymet_prcp", "daymet_radn", "daymet_tmax", "daymet_tmin", "town", "date")	
+```  
+
+5. Read and select soils series for each site  
+
+```{r, read and select soils series for experiments}
+ars_soilseries<-read_csv("../data/ars/ars_soilseries.csv")
+
+soils<-ars_soilseries%>%
+  select(`Experimental Unit`, `Soil series`)%>%
+  rename(series = `Soil series`)%>%
+  separate(`Experimental Unit`, c("state","exp"), sep = 3)%>%
+  filter(state != "ORP")%>%
+  #select(-exp)%>%
+  distinct()%>%
+  mutate(series = word(series, 1))%>%
+  na.omit()
+```  
+
+6. Get soil sand silt, clay, organic C, and pH from SSURGO  
+
+```{r, get and add soil data}
+
+our_soils<-soils%>%
+  distinct(series)%>%
+  mutate(dom_soil = word(series, 1))%>%
+  distinct(dom_soil)%>%
+  na.omit()
+
+get_soil_data <- function(series){
+  horizons(fetchKSSL(series))%>%
+    select(pedon_key, hzn_desgn, sand, silt, clay, oc, ph_h2o)%>%
+    filter(grepl('A', hzn_desgn))%>%
+    select(-c(hzn_desgn, pedon_key))%>%
+    summarise_each(funs(mean(., na.rm = TRUE)))%>%
+    mutate(series = series)  
+}  
+
+brute_errors<-lapply(our_soils$dom_soil, function(series) try(get_soil_data(series)))
+
+ars_soils<-bind_rows(Filter(function(series) !inherits(series, "try-error"), brute_errors))
+```  
+
+7. Join all the data together  
+
+```{r, join and filter fluxes, weather, and location data}
+ars<-left_join(weather, fluxes, by=c("state", "Date"))
+ars<-left_join(ars, soils, by = c("state", "exp"))
+ars<-left_join(ars, ars_soils, by = "series" )
+ars<-left_join(ars, latlong, by = "state")
+
+
+colnames(ars)<-c("site", "date", "max_temp", "min_temp", 
+                 "precip", "radn", "exp", "N2O", "air_temp",
+                 "soil_temp", "soil_moisture", "series", 
+                 "sand", "silt", "clay", "oc", "ph_h2o", "exp.y", "lat", "long")
+
+ars<-ars%>%
+  select(-exp.y)%>%
+  mutate(year = year(date), month = month(date), day = yday(date))
+```  
+
+8. Choose only the sites that freeze  
+
+```{r, looking only at sites that freeze}
+ars_cold<-ars %>% filter(site %in% c("INA", "INT", "INW", "MNM", "MNR", "NDM", "NEM", "NVN", "PAH"))%>%
+  mutate(town = ifelse((site %in% c("INA", "INT", "INW")), "West_Lafayette",
+                       ifelse((site == "MNM"), "Morris",
+                              ifelse((site == "MNR"), "Roseville",
+                                     ifelse((site %in% c("NDM", "NEM", "NVN")), "Mandan",
+                                            ifelse((site == "PAH"), "University_Park", "NA" ))))), 
+                                            date = as.Date(date))
+
+ars_cold<-ars_cold%>%
+  mutate(spring_year = ifelse((date >"2003-06-02" & date < "2004-06-02"), 2004,
+                        ifelse((date >"2004-06-02" & date < "2005-06-02"), 2005,
+                               ifelse((date >"2005-06-02" & date < "2006-06-02"), 2006,
+                                      ifelse((date >"2006-06-02" & date < "2007-06-02"), 2007,
+                        ifelse((date >"2007-06-02" & date < "2008-06-02"), 2008,
+                          ifelse((date >"2008-06-02" & date < "2009-06-02"), 2009,
+                             ifelse((date >"2009-06-02" & date < "2010-06-02"), 2010,
+                                ifelse((date >"2010-06-02" & date < "2011-06-02"), 2011, 0)))))))))
+
+day<-c(155:365, 1:154)
+new_days<-1:365
+
+new_year<-data.frame(day, new_days)
+
+ars_cold<-left_join(ars_cold, new_year, by = "day")  
+
+ggplot(ars_cold, aes(x=town, y=N2O))+
+  geom_jitter(alpha=.3)
+```
+
+###Make annual-based variables
+
+```{r, Make average spring N2O for a response variable}
+
+#may want to try converting average N2O into cumulative N2O like Wagner-Riddle
+ars_spring<-ars_cold%>% 
+  filter(day<150)%>%
+  select(-exp, -series)%>%
+  group_by(site,town, year)%>%
+  summarise(avg_N2O = (mean(N2O, na.rm = TRUE)))  
+
+ggplot(ars_spring, aes(x=year, y=avg_N2O))+
+  geom_point()+
+  facet_wrap(~town)+
+  ggtitle("Avg spring N2O (Jan-May)")
+```
+
+```{r, Daymet-based cold factor}
+how_cold<-daymet%>%
+  mutate(spring_year = ifelse((date >"2003-06-02" & date < "2004-06-02"), 2004,
+                              ifelse((date >"2004-06-02" & date < "2005-06-02"), 2005,
+                                     ifelse((date >"2005-06-02" & date < "2006-06-02"), 2006,
+                                            ifelse((date >"2006-06-02" & date < "2007-06-02"), 2007,
+                                                ifelse((date >"2007-06-02" & date < "2008-06-02"), 2008,
+                                                ifelse((date >"2008-06-02" & date < "2009-06-02"), 2009,
+                                                ifelse((date >"2009-06-02" & date < "2010-06-02"), 2010,
+                                  ifelse((date >"2010-06-02" & date < "2011-06-02"), 2011, 0)))))))))%>%
+  filter(daymet_tmin < 0)%>%
+  group_by(town, spring_year)%>%
+  summarise(cold_sum = sum(daymet_tmin))%>%
+  filter(spring_year != 0)%>%
+  rename(year = spring_year)  
+
+ggplot(how_cold, aes(x=year, y=cold_sum, color = town))+
+  geom_point(size=2)+
+  ggtitle("Sum of temperatures below zero (November-May)")
+```  
+
+```{r, Daymet-based warm factor}
+how_warm<-daymet%>% 
+  filter(yday<150)%>%
+  group_by(town, year)%>%
+  summarise(sum_tmax = sum(daymet_tmax))  
+
+ggplot(how_warm, aes(x=year, y=sum_tmax, color=town))+
+  geom_point(size=2)+
+  ggtitle("Sum of max temps (Jan-May)")
+```
+
+```{r, Bring annual variables together}
+annual<-ars_spring%>%
+  left_join(how_cold, by = c("town", "year"))%>%
+  left_join(how_warm, by = c("town", "year"))
+
+ggplot(annual, aes(x=sum_tmax, y=avg_N2O))+
+  geom_point()+
+  geom_smooth(method = "lm")  
+
+ggplot(annual, aes(x=cold_sum, y=avg_N2O))+
+  geom_point()+
+  geom_smooth(method = "lm")
+```  
+
+```{r, Add soil characteristics back in}
+the_data<-ars_cold%>%
+  select(site, sand, silt, clay, oc, ph_h2o, lat)%>%
+  group_by(sand)%>%
+  distinct(.keep_all=TRUE)%>%
+  group_by(site)%>%
+  summarize_each(funs(mean(., na.rm = TRUE)))%>%
+  full_join(annual, by = "site")%>%
+  mutate(temp_dif = sum_tmax - cold_sum)
+```
+
+```{r, how bout some relationships}
+pairs(the_data[, c(2:6, 10:12)])
+```
+
+```{r, how bout some models}
+
+library(MASS)
+
+fit<-lm(avg_N2O ~ cold_sum + sum_tmax + oc + clay + ph_h2o, data=the_data)
+step<- stepAIC(fit, direction="both")
+
+step$anova
+
+fit2<-lm(avg_N2O ~ cold_sum + sum_tmax + oc, data=the_data)
+
+
+library(boot)
+
+glm.fit = glm(avg_N2O ~ cold_sum + sum_tmax + oc, data=the_data)
+
+cv.glm(the_data, glm.fit)$delta
+
+nonan<-as.data.frame(unclass(na.omit(the_data)))
+
+library(caret)
+train_control<-trainControl(method="LOOCV")
+
+model1<-train(avg_N2O ~ sum_tmax + cold_sum + oc + clay, data=nonan, trControl=train_control, method="lm")
+
+model2<-train(avg_N2O ~ sum_tmax + oc + clay + oc*clay, data=nonan, trControl=train_control, method="lm")
+
+model3<-train(avg_N2O ~ sum_tmax + oc*sum_tmax, data=nonan, trControl=train_control, method="lm")
+```
+
+
+
+
