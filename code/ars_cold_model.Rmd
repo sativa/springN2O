@@ -69,9 +69,16 @@ ars_latlong<-read_csv("../data/ars/ars_latlong.csv")
 
 latlong<-ars_latlong%>%
   select(`Experimental Unit`, `Latitude of weather station, decimal degrees`, `Longitude of weather station, decimal degrees`)%>%
-  rename(lat = `Latitude of weather station, decimal degrees`, long = `Longitude of weather station, decimal degrees`)%>%
-  separate(`Experimental Unit`, c("state","exp"), sep = 3)%>%
-  filter(state != "ORP")
+  rename(site = `Experimental Unit`, lat = `Latitude of weather station, decimal degrees`, lon = `Longitude of weather station, decimal degrees`)%>%
+  #separate(`Experimental Unit`, c("state","exp"), sep = 3)%>%
+  #filter(state != "ORP")%>%
+  distinct(lat, .keep_all = TRUE)%>%
+  mutate(lat = round(lat, digits = 4), lon = round(lon, digits = 4))
+
+
+  
+
+write.csv(latlong, file = "fordaymet.csv", row.names = FALSE, quote = FALSE, col.names = FALSE)
 ```  
 
 4. Read and select DAYMET data for all the cold sites (Mandan, Morris, Roseville, University Park, West Lafayette)
@@ -93,6 +100,15 @@ daymet<-rbind(daymet_mandan, daymet_morris, daymet_roseville, daymet_university_
 daymet$date<-as.Date(strptime(paste(daymet$year, daymet$yday), format="%Y%j"))		
 colnames(daymet)<-c("year", "yday", "daymet_prcp", "daymet_radn", "daymet_tmax", "daymet_tmin", "town", "date")	
 ```  
+
+```{r, read and download DAYMET data}
+
+daymet_all<-download_daymet_batch(file_location = 'fordaymet.csv',
+                                  start = 2003, 
+                                  end = 2011, 
+                                  internal = TRUE)
+
+```
 
 5. Read and select soils series for each site  
 
