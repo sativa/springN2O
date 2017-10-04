@@ -228,7 +228,7 @@ ggplot(ars_spring, aes(x=year, y=avg_N2O))+
 ```
 
 ```{r, Daymet-based November-May variables}
-how_cold<-daymet%>%
+winter<-daymet%>%
   mutate(spring_year = ifelse((date >"2003-06-02" & date < "2004-06-02"), 2004,
                               ifelse((date >"2004-06-02" & date < "2005-06-02"), 2005,
                                      ifelse((date >"2005-06-02" & date < "2006-06-02"), 2006,
@@ -236,16 +236,19 @@ how_cold<-daymet%>%
                                                 ifelse((date >"2007-06-02" & date < "2008-06-02"), 2008,
                                                 ifelse((date >"2008-06-02" & date < "2009-06-02"), 2009,
                                                 ifelse((date >"2009-06-02" & date < "2010-06-02"), 2010,
-                                  ifelse((date >"2010-06-02" & date < "2011-06-02"), 2011, 0)))))))))%>%
+                                  ifelse((date >"2010-06-02" & date < "2011-06-02"), 2011, 0)))))))))
+
+how_cold<-winter%>%
   filter(`tmin (deg c)` < 0)%>%
   group_by(site, spring_year)%>%
   summarise(cold_sum = sum(`tmin (deg c)`))%>%
   filter(spring_year != 0)%>%
-  rename(year = spring_year)  
+  rename(year = spring_year)
 
-ggplot(how_cold, aes(x=year, y=cold_sum, color = site))+
-  geom_point(size=2)+
-  ggtitle("Sum of temperatures below zero (November-May)")
+how_wet<-winter%>%
+  group_by(site, spring_year)%>%
+  summarise(snow_sum = sum(`swe (kg/m^2)`), precip_sum = sum(`prcp (mm/day)`))%>%
+  filter(spring_year != 0)
 ```  
 
 ```{r, Daymet-based warm factor}
