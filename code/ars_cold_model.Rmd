@@ -248,26 +248,24 @@ how_cold<-winter%>%
 how_wet<-winter%>%
   group_by(site, spring_year)%>%
   summarise(snow_sum = sum(`swe (kg/m^2)`), precip_sum = sum(`prcp (mm/day)`))%>%
-  filter(spring_year != 0)
+  filter(spring_year != 0)%>%
+  rename(year = spring_year)
 ```  
 
 ```{r, Daymet-based warm factor}
 how_warm<-daymet%>% 
   filter(yday<150)%>%
   group_by(site, year)%>%
-  summarise(sum_tmax = sum(`tmax (deg c)`))  
-
-ggplot(how_warm, aes(x=year, y=sum_tmax, color=site))+
-  geom_point(size=2)+
-  ggtitle("Sum of max temps (Jan-May)")
+  summarise(sum_tmax = sum(`tmax (deg c)`), sum_rad = sum(`srad (W/m^2)`))  
 ```
 
 ```{r, Bring annual variables together}
 annual<-ars_spring%>%
   left_join(how_cold, by = c("site", "year"))%>%
-  left_join(how_warm, by = c("site", "year"))
+  left_join(how_warm, by = c("site", "year"))%>%
+  left_join(how_wet, by = c("site", "year"))
 
-ggplot(annual, aes(x=sum_tmax, y=avg_N2O))+
+ggplot(annual, aes(x=snow_sum, y=avg_N2O, color=site))+
   geom_point()+
   geom_smooth(method = "lm")  
 
