@@ -108,7 +108,15 @@ files <- dir(data_path, pattern = "*.csv")
 daymet <- data_frame(filename = files) %>% 
   mutate(file_contents = purrr::map(filename, ~ read_csv(file.path(data_path, .), skip=7)))%>%
   unnest()%>%
-  mutate(site = str_sub(filename, 1, 3))
+  mutate(site = str_sub(filename, 1, 3))%>%
+  select(-filename, -`dayl (s)`, -`vp (Pa)`)
+
+years <- unique(daymet$year)
+yearstarts <- setNames(as.Date(paste0(years, "-01-01")), years)
+date <- yearstarts[as.character(daymet$year)] + daymet$yday - 1
+
+daymet<-cbind(daymet, date)
+
 ```
 
 5. Read and select soils series for each site  
@@ -219,7 +227,7 @@ ggplot(ars_spring, aes(x=year, y=avg_N2O))+
   ggtitle("Avg spring N2O (Jan-May)")
 ```
 
-```{r, Daymet-based cold factor}
+```{r, Daymet-based November-May variables}
 how_cold<-daymet%>%
   mutate(spring_year = ifelse((date >"2003-06-02" & date < "2004-06-02"), 2004,
                               ifelse((date >"2004-06-02" & date < "2005-06-02"), 2005,
@@ -229,13 +237,13 @@ how_cold<-daymet%>%
                                                 ifelse((date >"2008-06-02" & date < "2009-06-02"), 2009,
                                                 ifelse((date >"2009-06-02" & date < "2010-06-02"), 2010,
                                   ifelse((date >"2010-06-02" & date < "2011-06-02"), 2011, 0)))))))))%>%
-  filter(daymet_tmin < 0)%>%
-  group_by(town, spring_year)%>%
-  summarise(cold_sum = sum(daymet_tmin))%>%
+  filter(`tmin (deg c)` < 0)%>%
+  group_by(site, spring_year)%>%
+  summarise(cold_sum = sum(`tmin (deg c)`))%>%
   filter(spring_year != 0)%>%
   rename(year = spring_year)  
 
-ggplot(how_cold, aes(x=year, y=cold_sum, color = town))+
+ggplot(how_cold, aes(x=year, y=cold_sum, color = site))+
   geom_point(size=2)+
   ggtitle("Sum of temperatures below zero (November-May)")
 ```  
@@ -243,18 +251,18 @@ ggplot(how_cold, aes(x=year, y=cold_sum, color = town))+
 ```{r, Daymet-based warm factor}
 how_warm<-daymet%>% 
   filter(yday<150)%>%
-  group_by(town, year)%>%
-  summarise(sum_tmax = sum(daymet_tmax))  
+  group_by(site, year)%>%
+  summarise(sum_tmax = sum(`tmax (deg c)`))  
 
-ggplot(how_warm, aes(x=year, y=sum_tmax, color=town))+
+ggplot(how_warm, aes(x=year, y=sum_tmax, color=site))+
   geom_point(size=2)+
   ggtitle("Sum of max temps (Jan-May)")
 ```
 
 ```{r, Bring annual variables together}
 annual<-ars_spring%>%
-  left_join(how_cold, by = c("town", "year"))%>%
-  left_join(how_warm, by = c("town", "year"))
+  left_join(how_cold, by = c("site", "year"))%>%
+  left_join(how_warm, by = c("site", "year"))
 
 ggplot(annual, aes(x=sum_tmax, y=avg_N2O))+
   geom_point()+
