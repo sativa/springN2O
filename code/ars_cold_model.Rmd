@@ -256,7 +256,8 @@ how_wet<-winter%>%
 how_warm<-daymet%>% 
   filter(yday<150)%>%
   group_by(site, year)%>%
-  summarise(sum_tmax = sum(`tmax (deg c)`), sum_rad = sum(`srad (W/m^2)`))  
+  summarise(sum_tmax = sum(`tmax (deg c)`), sum_rad = sum(`srad (W/m^2)`))%>%
+  filter(sum_rad < 60000)
 ```
 
 ```{r, Bring annual variables together}
@@ -287,23 +288,54 @@ the_data<-ars_cold%>%
 
 ```{r, how bout some relationships}
 pairs(the_data[, c(2:6, 10:12)])
+
+nonan$log_avg_N2O <- log(nonan$avg_N2O)
+pairs(nonan[, c(2:6, 11:17)])
+
+pairs(the_data[, c(2:6, 10)])
+pairs(the_data[, c(10:12)])
+pairs(nonan[, c(2:6, 17)])
+pairs(nonan[, c(11:17)])
+plot(nonan$avg_N2O ~ nonan$precip_sum)
+plot(nonan$log_avg_N20 ~ nonan$precip_sum)
+plot(nonan$avg_N2O ~ nonan$clay)
+plot(nonan$log_avg_N2O ~ nonan$clay)
 ```
 
 ```{r, how bout some models}
 
 library(MASS)
 
-fit<-lm(avg_N2O ~ cold_sum + sum_tmax + oc + clay + ph_h2o, data=the_data)
+fit<-lm(avg_N2O ~ cold_sum  + oc + clay + ph_h2o + precip_sum, data=the_data)
+plot(fit$residuals ~ fit$fitted.values)
+abline(h=0)
+qqnorm(fit$residuals)
+qqline(fit$residuals)
+
+
 step<- stepAIC(fit, direction="both")
 
 step$anova
 
-fit2<-lm(avg_N2O ~ cold_sum + sum_tmax + oc, data=the_data)
+fit2<-lm(avg_N2O ~ sum_tmax + oc, data=the_data)
+plot(fit2$residuals ~ fit2$fitted.values)
+abline(h=0)
+qqnorm(fit2$residuals)
+qqline(fit2$residuals)
+
+fit3<-lm(log(avg_N2O) ~ sum_tmax + oc, data=the_data)
+plot(fit3$residuals ~ fit3$fitted.values)
+abline(h=0)
+qqnorm(fit3$residuals)
+qqline(fit3$residuals)
+
 
 
 library(boot)
 
 glm.fit = glm(avg_N2O ~ cold_sum + sum_tmax + oc, data=the_data)
+
+summary(nonan$avg_N2O)
 
 cv.glm(the_data, glm.fit)$delta
 
@@ -316,7 +348,9 @@ model1<-train(avg_N2O ~ sum_tmax + cold_sum + oc + clay, data=nonan, trControl=t
 
 model2<-train(avg_N2O ~ sum_tmax + oc + clay + oc*clay, data=nonan, trControl=train_control, method="lm")
 
-model3<-train(avg_N2O ~ sum_tmax + oc*sum_tmax, data=nonan, trControl=train_control, method="lm")
+model3<-train(avg_N2O ~ sum_tmax + oc*sum_tmax, data=nonan, trControl=train_control, method="lm")  
+
+model4<-train(avg_N2O ~ cold_sum + oc + clay + precip_sum, data=nonan, trControl=train_control, method="lm")
 ```
 
 
